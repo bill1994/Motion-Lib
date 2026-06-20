@@ -1,3 +1,5 @@
+import { AnimeDrop } from "./AnimeDrop";
+
 export const MyComposition = () => {
-  return null;
+  return <AnimeDrop />;
 };

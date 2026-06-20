@@ -1,17 +1,60 @@
 import "./index.css";
-import { Composition } from "remotion";
+import { Composition, CalculateMetadataFunction } from "remotion";
 import { MyComposition } from "./Composition";
+import { HeroReveal } from "./HeroReveal";
+import { PhysicsDrop } from "./PhysicsDrop";
+import { OrbitalRelaunch } from "./OrbitalRelaunch";
+
+/**
+ * 为输出 ProRes 4444 透明视频预置默认编码参数
+ */
+const calculateMetadata: CalculateMetadataFunction<Record<string, unknown>> = async () => {
+  return {
+    defaultCodec: "prores",
+    defaultVideoImageFormat: "png",
+    defaultPixelFormat: "yuva444p10le",
+    defaultProResProfile: "4444",
+  };
+};
 
 export const RemotionRoot: React.FC = () => {
   return (
     <>
       <Composition
-        id="MyComp"
+        id="AnimeDrop"
         component={MyComposition}
-        durationInFrames={60}
-        fps={30}
-        width={1280}
-        height={720}
+        durationInFrames={180}
+        fps={60}
+        width={1920}
+        height={1080}
+        calculateMetadata={calculateMetadata}
+      />
+      <Composition
+        id="PhysicsDrop"
+        component={PhysicsDrop}
+        durationInFrames={180}
+        fps={60}
+        width={1920}
+        height={1080}
+        calculateMetadata={calculateMetadata}
+      />
+      <Composition
+        id="OrbitalRelaunch"
+        component={OrbitalRelaunch}
+        durationInFrames={180}
+        fps={60}
+        width={1920}
+        height={1080}
+        calculateMetadata={calculateMetadata}
+      />
+      <Composition
+        id="HeroReveal"
+        component={HeroReveal}
+        durationInFrames={180}
+        fps={60}
+        width={1920}
+        height={1080}
+        calculateMetadata={calculateMetadata}
       />
     </>
   );
