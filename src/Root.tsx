@@ -4,6 +4,8 @@ import { MyComposition } from "./Composition";
 import { HeroReveal } from "./HeroReveal";
 import { PhysicsDrop } from "./PhysicsDrop";
 import { OrbitalRelaunch } from "./OrbitalRelaunch";
+import { TextIntro } from "./TextIntro";
+import { LiquidGlass } from "./LiquidGlass";
 
 /**
  * 为输出 ProRes 4444 透明视频预置默认编码参数
@@ -51,6 +53,24 @@ export const RemotionRoot: React.FC = () => {
         id="HeroReveal"
         component={HeroReveal}
         durationInFrames={180}
+        fps={60}
+        width={1920}
+        height={1080}
+        calculateMetadata={calculateMetadata}
+      />
+      <Composition
+        id="TextIntro"
+        component={TextIntro}
+        durationInFrames={180}
+        fps={60}
+        width={1920}
+        height={1080}
+        calculateMetadata={calculateMetadata}
+      />
+      <Composition
+        id="LiquidGlass"
+        component={LiquidGlass}
+        durationInFrames={300}
         fps={60}
         width={1920}
         height={1080}
