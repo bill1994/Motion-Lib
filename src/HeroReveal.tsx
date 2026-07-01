@@ -503,3 +503,13 @@ export const HeroReveal: React.FC<HeroRevealProps> = ({
 //   npx remotion render HeroReveal out/hero-v2.mov \
 //     --props='{"seed":"variant-B"}'
 // ================================================================
+
+export const catalogEntry = {
+  name: 'HeroReveal',
+  description: '物理弹道发射 + 慢动作展示',
+  params: {
+    seed: { type: 'string', default: '"default"', desc: '随机种子，确保轨迹可复现' },
+    gravity: { type: 'number', default: '1.8', desc: '重力加速度（px/frame²）' },
+    durationInFrames: { type: 'number', default: '180', desc: '总帧数 @60fps' },
+  },
+};

@@ -300,3 +300,13 @@ export const AnimeDrop: React.FC<AnimeDropProps> = ({
     </div>
   );
 };
+
+export const catalogEntry = {
+  name: 'AnimeDrop',
+  description: '动漫式爆发弹入 + 重力下落 + 弹簧归位',
+  params: {
+    targetSize: { type: 'number', desc: '主体正方形边长（px），默认画面宽度 30%' },
+    initialTiltAngle: { type: 'number', default: '-20', desc: '初始逆时针倾斜角度（度）' },
+    seed: { type: 'string', desc: '随机种子，用于确定性动画变体' },
+  },
+};

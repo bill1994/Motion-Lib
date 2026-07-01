@@ -188,3 +188,14 @@ export const TextIntro: React.FC<TextIntroProps> = ({
     </div>
   );
 };
+
+export const catalogEntry = {
+  name: 'TextIntro',
+  description: '字符逐字弹性弹入（y:100%→0, back.out）',
+  params: {
+    mainText: { type: 'string', default: '"ZhanWeiFu"', desc: '主标题文字' },
+    subText: { type: 'string', default: '""', desc: '副标题文字' },
+    fontSize: { type: 'number', default: '48', desc: '主标题字号（px）' },
+    color: { type: 'string', default: '"#1D1B20"', desc: '文字颜色' },
+  },
+};

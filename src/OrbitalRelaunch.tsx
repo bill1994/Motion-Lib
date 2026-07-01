@@ -333,3 +333,13 @@ export const OrbitalRelaunch: React.FC<BulletTimeShowcaseProps> = ({
 //   npx remotion render OrbitalRelaunch out/bullet-time-v2.mov \
 //     --props='{"seed":"variant-B"}'
 // ================================================================
+
+export const catalogEntry = {
+  name: 'OrbitalRelaunch',
+  description: '弹道轨迹 + 慢动作浮动 + 时间恢复飞出',
+  params: {
+    seed: { type: 'string', default: '"default"', desc: '随机种子，确保轨迹可复现' },
+    gravity: { type: 'number', default: '1.35', desc: '重力加速度（px/frame²）' },
+    bulletTimeScale: { type: 'number', default: '0.05', desc: '子弹时间缩放系数' },
+  },
+};

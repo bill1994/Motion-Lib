@@ -30,7 +30,8 @@
     "dev": "remotion studio",
     "build": "remotion bundle",
     "upgrade": "remotion upgrade",
-    "lint": "eslint src && tsc"
+    "lint": "eslint src && tsc",
+    "update-catalog": "npx tsx scripts/generate-catalog.ts"
   },
   "sideEffects": [
     "*.css"

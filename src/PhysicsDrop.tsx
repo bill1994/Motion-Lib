@@ -249,3 +249,13 @@ export const PhysicsDrop: React.FC<PhysicsDropProps> = ({
     </div>
   );
 };
+
+export const catalogEntry = {
+  name: 'PhysicsDrop',
+  description: '三段式物理下落（蓄力→弹射→自由落体→着陆）',
+  params: {
+    endX: { type: 'number', desc: '目标落点 X 坐标（px）' },
+    endY: { type: 'number', desc: '目标落点 Y 坐标（px）' },
+    targetSize: { type: 'number', desc: '主体尺寸（px）' },
+  },
+};
