@@ -36,6 +36,20 @@ To guarantee deterministic, frame-accurate renders at 60fps without layout drops
 2. **The Seconds-Seek Formula**: You MUST convert Remotion frames to exact float seconds using `tl.seek(frame / fps)`. Never use `.progress()` with raw percentages or raw frame counts in `.seek()`.
 3. **Context Lifecycle**: ALWAYS encapsulate your GSAP sequence inside `gsap.context(( ) => { ... }, containerRef)` to prevent timeline duplication and memory leaking during Puppeteer rendering.
 
+## Design System — Color Palette (MANDATORY)
+
+The project enforces a personal brand color system. All compositions, pages, and UI elements MUST adhere to these tokens:
+
+| Token | Hex | Usage |
+|-------|-----|-------|
+| **Page primary** | `#CBC0D3` | Page backgrounds, decorative surfaces, large accent areas |
+| **Text primary** | `#1D1B20` | Main body text, large headings (h1/h2), primary labels |
+| **Text secondary** | `#4E4D5C` | Subtitles, captions, meta info, secondary labels |
+
+**Dark-background rule**: When the background is dark (e.g. `#1D1B20` or near-black), use `#CBC0D3` as the text color for readability.
+
+These three values form a cohesive purple-gray family. No other colors should be introduced unless a specific design brief explicitly calls for an accent. Where possible, prefer opacity/alpha variations of these three over adding new hex values.
+
 ## Style & Performance Conventions (1080P 60fps Optimization)
 
 - Deterministic PRNG (djb2 hash + mulberry32) used in `HeroReveal` and `OrbitalRelaunch` — seed prop `"default"` by default, guarantees reproducible renders across frames and machines.
