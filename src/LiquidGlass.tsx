@@ -38,6 +38,9 @@ const MAIN_OFFSET = 30;
 const SUB_OFFSET = 230;
 const MAIN_DURATION = 1.0;
 const SUB_DURATION = 1.5;
+const BOUNCE_AMPLITUDE = 8;
+const BOUNCE_DAMPING = 10;
+const BOUNCE_FREQ = 14;
 
 // =============================================================================
 //  GLSL Shader (Three.js ShaderMaterial, GLSL ES 1.0)
@@ -153,13 +156,11 @@ void main() {
   vec2 tUv2 = (px - vec2(cx, u_g2y) + vec2(GLASS_W * 0.5, GLASS_H * 0.5)) / vec2(GLASS_W, GLASS_H);
   float out1 = step(0.0, tUv1.x) * step(tUv1.x, 1.0) * step(0.0, tUv1.y) * step(tUv1.y, 1.0);
   float out2 = step(0.0, tUv2.x) * step(tUv2.x, 1.0) * step(0.0, tUv2.y) * step(tUv2.y, 1.0);
-  vec4 t1 = texture2D(u_text1, clamp(tUv1, 0.0, 1.0));
-  vec4 t2 = texture2D(u_text2, clamp(tUv2, 0.0, 1.0));
+  vec4 t1 = texture2D(u_text1, tUv1);
+  vec4 t2 = texture2D(u_text2, tUv2);
   t1.a *= out1;
   t2.a *= out2 * subAlpha;
-  float h = max(GOOEY_K - abs(d1 - d2), 0.0) / GOOEY_K;
-  float merged = smoothstep(0.3, 0.8, h);
-  float textBlend = mix(smoothstep(-0.5, 0.5, d1 - d2), 0.0, merged);
+  float textBlend = smoothstep(0.0, 0.0, d2 - d1);
   vec4 textColor = mix(t1, t2, textBlend);
 
   // ── 合成 ──
@@ -254,13 +255,23 @@ export const LiquidGlass: React.FC<LiquidGlassProps> = ({ children }) => {
         extrapolateRight: "clamp",
       });
 
-  const g2y = frame < splitFrame
+  function dampedBounce(tSec: number): number {
+    if (tSec <= 0) return 0;
+    return BOUNCE_AMPLITUDE * Math.exp(-BOUNCE_DAMPING * tSec) * Math.sin(BOUNCE_FREQ * tSec);
+  }
+
+  const g2ySplitEndFrame = splitFrame + SUB_DURATION * fps;
+
+  const g2yBase = frame < splitFrame
     ? height / 2
-    : interpolate(frame, [splitFrame, splitFrame + SUB_DURATION * fps], [height / 2, height / 2 + SUB_OFFSET], {
-        easing: Easing.back(2.5),
+    : interpolate(frame, [splitFrame, g2ySplitEndFrame], [height / 2, height / 2 + SUB_OFFSET], {
+        easing: Easing.ease,
         extrapolateLeft: "clamp",
         extrapolateRight: "clamp",
       });
+
+  const bounceT = (frame - g2ySplitEndFrame) / fps;
+  const g2y = g2yBase + dampedBounce(bounceT);
 
   // ------------------------------------------------------------------
   //  纹理 (一次性创建, 后续只更新 uniform 数值)
