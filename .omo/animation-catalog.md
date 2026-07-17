@@ -1,7 +1,21 @@
 # 🎪 动画组件目录
 
 > 此文件由 `npm run update-catalog` 自动生成。**请勿手写修改**。
-> 共 14 个组件 · 生成时间: 2026-07-01
+> 共 16 个组件 · 生成时间: 2026-07-17
+
+## AnimatedCardScene
+
+3D 卡片弹出 + 粒子爆发动效 — 三段式（出场/悬停呼吸/退场）
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `seed` | string | "default" | 随机种子，确保粒子确定性生成 |
+| `title` | string | "Card Title" | 卡片标题 |
+| `subtitle` | string | "Subtitle" | 卡片副标题 |
+| `startX` | number | 300 | 卡片起始 X 坐标（px） |
+| `startY` | number | height/2 | 卡片起始 Y 坐标（px） |
+| `cardWidth` | number | 320 | 卡片宽度（px） |
+| `cardHeight` | number | 420 | 卡片高度（px） |
 
 ## AnimeDrop
 
@@ -13,6 +27,16 @@
 | `initialTiltAngle` | number | -20 | 初始逆时针倾斜角度（度） |
 | `seed` | string | — | 随机种子，用于确定性动画变体 |
 
+## CardFlyUp
+
+卡片从下方旋转升入 — 复现 incredibles.dev s__usp-wrapper 动效
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `cardWidth` | number | 320 | 卡片宽度 (px) |
+| `cardHeight` | number | 420 | 卡片高度 (px) |
+| `durationInFrames` | number | 90 | 动画总帧数 @60fps |
+
 ## CharReveal
 
 字符从底部 3D 翻转显现（rotationX:90→0）
@@ -22,15 +46,17 @@
 | `text` | string | "ZHanWeiFU" | 显示的文字 |
 | `staggerMode` | enum: sequential\|random\|center\|edges | sequential | 字符出场顺序 |
 
-## CircleGlow
+## ClawdAction
 
-SVG 椭圆环绕文字描边绘制
+像素 Clawd 三段式动作序列 — 弹跳入场 → 空闲摇摆 → 旋转跑出屏幕
 
-| 参数 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| `text` | string | "✦" | 中心显示文字 |
-| `glowColor` | string | "#CBC0D3" | 椭圆描边颜色 |
-| `fontSize` | number | 48 | 文字字号（px） |
+*(固定效果，无配置参数)*
+
+## ClawdDrop
+
+像素 Clawd 角色从左侧滑入 + 弹跳 + 表情互动 + 爱心粒子系统
+
+*(固定效果，无配置参数)*
 
 ## CurtainReveal
 
@@ -80,25 +106,17 @@ SVG 椭圆环绕文字描边绘制
 | `textColor` | string | "#CBC0D3" | 文字颜色 |
 | `fontSizeVw` | number | 3.5 | 字号（vw 单位） |
 
-## OrbitalRelaunch
+## MovieScreen
 
-弹道轨迹 + 慢动作浮动 + 时间恢复飞出
-
-| 参数 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| `seed` | string | "default" | 随机种子，确保轨迹可复现 |
-| `gravity` | number | 1.35 | 重力加速度（px/frame²） |
-| `bulletTimeScale` | number | 0.05 | 子弹时间缩放系数 |
-
-## PhysicsDrop
-
-三段式物理下落（蓄力→弹射→自由落体→着陆）
+百叶窗 (Venetian Blind) Track Matte 转场 — 21列纵向叶片 + CRT弧面屏幕 + zoom in 至全屏
 
 | 参数 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
-| `endX` | number | — | 目标落点 X 坐标（px） |
-| `endY` | number | — | 目标落点 Y 坐标（px） |
-| `targetSize` | number | — | 主体尺寸（px） |
+| `columnCount` | number | 21 | 叶片列数（奇数） |
+| `curtainColor` | string | "#1D1B20" | 屏幕边框颜色 |
+| `screenWidth` | number | 85 | 电影屏幕宽度（视口百分比） |
+| `screenHeight` | number | 75 | 电影屏幕高度（视口百分比） |
+| `screenInitialScale` | number | 0.65 | 屏幕初始缩放 |
 
 ## SceneTransition
 
@@ -134,4 +152,4 @@ SVG 多边形旋转缩放转场
 *(固定效果，无配置参数)*
 
 ---
-> 共 14 个组件
+> 共 16 个组件

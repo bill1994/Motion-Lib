@@ -1,4 +1,4 @@
-# Remotion video
+# motion-lib — Animation Resource Library
 
 <p align="center">
   <a href="https://github.com/remotion-dev/logo">

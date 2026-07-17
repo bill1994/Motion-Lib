@@ -1,0 +1,22 @@
+{
+  "schema_version": 2,
+  "active_work_id": null,
+  "works": {
+    "water-orb-001": {
+      "work_id": "water-orb-001",
+      "active_plan": ".omo/plans/water-orb.md",
+      "plan_name": "water-orb",
+      "session_ids": ["codex:current"],
+      "status": "paused",
+      "worktree_path": null
+    },
+    "card-fly-up-001": {
+      "work_id": "card-fly-up-001",
+      "active_plan": ".omo/plans/card-fly-up-remotion.md",
+      "plan_name": "card-fly-up-remotion",
+      "session_ids": ["opencode:ses_0a0483773ffemUxOwbBwBWEX37"],
+      "status": "completed",
+      "worktree_path": null
+    }
+  }
+}

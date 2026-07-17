@@ -1,0 +1,22 @@
+Bundling code        ━                  6%
+Bundling code        ━━━                18%
+Bundling code        ━━━━━━━━━━         58%
+Bundling code        ━━━━━━━━━━━╸       65%
+Bundling code        ━━━━━━━━━━━━╸      71%
+Bundling code        ━━━━━━━━━━━━━╸     76%
+Bundling code        ━━━━━━━━━━━━━━╸    81%
+Bundling code        ━━━━━━━━━━━━━━━    86%
+Bundling code        ━━━━━━━━━━━━━━━━   91%
+Bundling code        ━━━━━━━━━━━━━━━━━╸ 98%
+Bundling code        ━━━━━━━━━━━━━━━━━━ 100%
+Bundled code         ━━━━━━━━━━━━━━━━━━ 5885ms
+
+The following compositions are available:
+
+AnimeDrop          60      1920x1080      180 (3.00 sec)
+PhysicsDrop        60      1920x1080      180 (3.00 sec)
+OrbitalRelaunch    60      1920x1080      180 (3.00 sec)
+HeroReveal         60      1920x1080      180 (3.00 sec)
+TextIntro          60      1920x1080      180 (3.00 sec)
+LiquidGlass        60      1920x1080      300 (5.00 sec)
+ClawdDrop          60      1920x1080      180 (3.00 sec)

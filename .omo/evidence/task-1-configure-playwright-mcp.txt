@@ -1,0 +1,11 @@
+$ grep -A8 '"playwright"' /home/fanstic_b/.config/opencode/opencode.jsonc
+    "playwright": {
+      "type": "local",
+      "command": [
+        "npx",
+        "@playwright/mcp@latest",
+        "--browser=chrome",
+        "--isolated",
+        "--cdp-endpoint=http://127.0.0.1:9222"
+      ]
+    }

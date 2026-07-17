@@ -1,0 +1,6 @@
+Verification: WSL + Browser Workflow sections inserted into ~/.opencode/AGENTS.md
+
+grep -c "WSL 工作环境" ~/.opencode/AGENTS.md → 1
+grep -c "浏览器浏览工作流" ~/.opencode/AGENTS.md → 1
+
+Both sections present exactly once. Task complete.
