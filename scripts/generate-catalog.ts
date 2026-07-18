@@ -17,14 +17,30 @@ interface CatalogEntry {
 const SRC = join(__dirname, "..", "src");
 const OUTPUT = join(__dirname, "..", ".omo", "animation-catalog.md");
 
-const files = readdirSync(SRC).filter(
-  (f) => f.endsWith(".tsx") && f !== "Root.tsx" && f !== "Composition.tsx"
-);
+function findTsxFiles(dir: string): string[] {
+  const entries = readdirSync(dir, { withFileTypes: true });
+  const files: string[] = [];
+  for (const entry of entries) {
+    const fullPath = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...findTsxFiles(fullPath));
+    } else if (
+      entry.name.endsWith(".tsx") &&
+      entry.name !== "Root.tsx" &&
+      entry.name !== "Composition.tsx"
+    ) {
+      files.push(fullPath);
+    }
+  }
+  return files;
+}
+
+const files = findTsxFiles(SRC);
 
 const entries: CatalogEntry[] = [];
 
 for (const file of files) {
-  const content = readFileSync(join(SRC, file), "utf-8");
+  const content = readFileSync(file, "utf-8");
   const match = content.match(
     /export const catalogEntry\s*=\s*(\{[\s\S]*?\n\});/
   );

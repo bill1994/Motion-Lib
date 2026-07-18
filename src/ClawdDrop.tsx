@@ -205,3 +205,10 @@ export const ClawdDrop: React.FC = () => {
     </div>
   );
 };
+
+export const catalogEntry = {
+  name: "ClawdDrop",
+  description:
+    "像素 Clawd 角色从左侧滑入 + 弹跳 + 表情互动 + 爱心粒子系统",
+  params: {},
+};

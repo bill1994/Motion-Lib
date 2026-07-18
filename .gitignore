@@ -8,3 +8,6 @@ out
 
 # Ignore public directory (video assets)
 public/
+
+# Ignore OpenCode session cache
+.omo/run-continuation/

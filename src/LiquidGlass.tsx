@@ -34,11 +34,12 @@ const BLUR_RADIUS = 12;
 
 // -- 分离动画 (用 interpolate 驱动, 无 GSAP) --
 const SPLIT_START = 1.5;
-const MAIN_OFFSET = 30;
+const MAIN_OFFSET = 80;
 const SUB_OFFSET = 230;
-const MAIN_DURATION = 1.0;
-const SUB_DURATION = 1.5;
-const BOUNCE_AMPLITUDE = 8;
+const MAIN_DURATION = 0.7;
+const SUB_DURATION = 1.05;
+const BOUNCE_AMPLITUDE_G1 = 2;
+const BOUNCE_AMPLITUDE_G2 = 10;
 const BOUNCE_DAMPING = 10;
 const BOUNCE_FREQ = 14;
 
@@ -72,7 +73,7 @@ varying vec2 vUv;
 const float GLASS_W       = 320.0;
 const float GLASS_H       = 160.0;
 const float CORNER_R      = 20.0;
-const float GOOEY_K       = 180.0;
+const float GOOEY_K       = 140.0;
 const float EDGE_SOFTNESS = 1.5;
 const float REFRACT_STR   = 5.0;
 const float CURVATURE     = 0.4;
@@ -247,17 +248,22 @@ export const LiquidGlass: React.FC<LiquidGlassProps> = ({ children }) => {
   // ------------------------------------------------------------------
   const splitFrame = SPLIT_START * fps;
 
-  const g1y = frame < splitFrame
+  const g1ySplitEndFrame = splitFrame + MAIN_DURATION * fps;
+
+  const g1yBase = frame < splitFrame
     ? height / 2
-    : interpolate(frame, [splitFrame, splitFrame + MAIN_DURATION * fps], [height / 2, height / 2 - MAIN_OFFSET], {
+    : interpolate(frame, [splitFrame, g1ySplitEndFrame], [height / 2, height / 2 - MAIN_OFFSET], {
         easing: Easing.quad,
         extrapolateLeft: "clamp",
         extrapolateRight: "clamp",
       });
 
-  function dampedBounce(tSec: number): number {
+  const g1yBounceT = (frame - g1ySplitEndFrame) / fps;
+  const g1y = g1yBase + dampedBounce(g1yBounceT, BOUNCE_AMPLITUDE_G1);
+
+  function dampedBounce(tSec: number, amplitude: number): number {
     if (tSec <= 0) return 0;
-    return BOUNCE_AMPLITUDE * Math.exp(-BOUNCE_DAMPING * tSec) * Math.sin(BOUNCE_FREQ * tSec);
+    return amplitude * Math.exp(-BOUNCE_DAMPING * tSec) * Math.sin(BOUNCE_FREQ * tSec);
   }
 
   const g2ySplitEndFrame = splitFrame + SUB_DURATION * fps;
@@ -271,7 +277,7 @@ export const LiquidGlass: React.FC<LiquidGlassProps> = ({ children }) => {
       });
 
   const bounceT = (frame - g2ySplitEndFrame) / fps;
-  const g2y = g2yBase + dampedBounce(bounceT);
+  const g2y = g2yBase + dampedBounce(bounceT, BOUNCE_AMPLITUDE_G2);
 
   // ------------------------------------------------------------------
   //  纹理 (一次性创建, 后续只更新 uniform 数值)

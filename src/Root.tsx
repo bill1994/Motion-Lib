@@ -2,16 +2,19 @@ import "./index.css";
 import { Composition, CalculateMetadataFunction } from "remotion";
 import { MyComposition } from "./Composition";
 import { HeroReveal } from "./HeroReveal";
-import { PhysicsDrop } from "./PhysicsDrop";
-import { OrbitalRelaunch } from "./OrbitalRelaunch";
 import { TextIntro } from "./TextIntro";
 import { LiquidGlass } from "./LiquidGlass";
 import { WaterOrb } from "./WaterOrb";
 import { TextScramble } from "./TextScramble";
 import { GridReveal } from "./GridReveal";
 import { CurtainReveal } from "./CurtainReveal";
-import { CircleGlow } from "./CircleGlow";
 import { MediaTitle } from "./MediaTitle";
+import { MovieScreen } from "./MovieScreen";
+import { ClawdDrop } from "./ClawdDrop";
+import { ClawdAction } from "./ClawdAction";
+import { CardFlyUp } from "./CardFlyUp";
+import { AnimatedCardScene } from "./AnimatedCardScene/AnimatedCardScene";
+import { WordReveal } from "./WordReveal";
 
 /**
  * 为输出 ProRes 4444 透明视频预置默认编码参数
@@ -31,24 +34,6 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="AnimeDrop"
         component={MyComposition}
-        durationInFrames={180}
-        fps={60}
-        width={1920}
-        height={1080}
-        calculateMetadata={calculateMetadata}
-      />
-      <Composition
-        id="PhysicsDrop"
-        component={PhysicsDrop}
-        durationInFrames={180}
-        fps={60}
-        width={1920}
-        height={1080}
-        calculateMetadata={calculateMetadata}
-      />
-      <Composition
-        id="OrbitalRelaunch"
-        component={OrbitalRelaunch}
         durationInFrames={180}
         fps={60}
         width={1920}
@@ -119,15 +104,6 @@ export const RemotionRoot: React.FC = () => {
         calculateMetadata={calculateMetadata}
       />
       <Composition
-        id="CircleGlow"
-        component={CircleGlow}
-        durationInFrames={180}
-        fps={60}
-        width={1920}
-        height={1080}
-        calculateMetadata={calculateMetadata}
-      />
-      <Composition
         id="MediaTitle"
         component={MediaTitle}
         durationInFrames={180}
@@ -135,6 +111,69 @@ export const RemotionRoot: React.FC = () => {
         width={1920}
         height={1080}
         calculateMetadata={calculateMetadata}
+      />
+      <Composition
+        id="MovieScreen"
+        component={MovieScreen}
+        durationInFrames={180}
+        fps={60}
+        width={1920}
+        height={1080}
+        calculateMetadata={calculateMetadata}
+      />
+      <Composition
+        id="ClawdDrop"
+        component={ClawdDrop}
+        durationInFrames={180}
+        fps={60}
+        width={1920}
+        height={1080}
+        calculateMetadata={calculateMetadata}
+      />
+      <Composition
+        id="ClawdAction"
+        component={ClawdAction}
+        durationInFrames={180}
+        fps={60}
+        width={1920}
+        height={1080}
+        calculateMetadata={calculateMetadata}
+      />
+      <Composition
+        id="CardFlyUp"
+        component={CardFlyUp}
+        durationInFrames={120}
+        fps={60}
+        width={1920}
+        height={1080}
+        calculateMetadata={calculateMetadata}
+      />
+      <Composition
+        id="AnimatedCardScene"
+        component={AnimatedCardScene as unknown as React.FC<Record<string, unknown>>}
+        durationInFrames={180}
+        fps={60}
+        width={1920}
+        height={1080}
+        calculateMetadata={calculateMetadata}
+        defaultProps={{
+          title: "Card Title",
+          subtitle: "Subtitle",
+          description: "A beautifully animated card scene with particle burst effects.",
+          seed: "default",
+        }}
+      />
+      <Composition
+        id="WordReveal"
+        component={WordReveal as unknown as React.FC<Record<string, unknown>>}
+        durationInFrames={180}
+        fps={60}
+        width={1920}
+        height={1080}
+        calculateMetadata={calculateMetadata}
+        defaultProps={{
+          text: "Crafting Motion",
+        }}
       />
     </>
   );

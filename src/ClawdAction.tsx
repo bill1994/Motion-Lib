@@ -206,3 +206,10 @@ export const ClawdAction: React.FC = () => {
     </div>
   );
 };
+
+export const catalogEntry = {
+  name: "ClawdAction",
+  description:
+    "像素 Clawd 三段式动作序列 — 弹跳入场 → 空闲摇摆 → 旋转跑出屏幕",
+  params: {},
+};
