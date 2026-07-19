@@ -50,6 +50,7 @@ export const GlassTitleCard: React.FC = () => {
 
 export const catalogEntry = {
   name: 'GlassTitleCard',
+  category: 'typography',
   description:
     '霓虹玻璃质感片头标题卡 — Neo surface 风格，tilt 入场 + glow 脉冲',
   params: {},

@@ -192,6 +192,7 @@ export const WaterOrb: React.FC = () => {
 
 export const catalogEntry = {
   name: 'WaterOrb',
+  category: 'vfx',
   description: '3D 水球流动噪波效果',
   params: {},
 };

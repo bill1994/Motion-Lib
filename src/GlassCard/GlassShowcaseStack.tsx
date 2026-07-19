@@ -66,6 +66,7 @@ export const GlassShowcaseStack: React.FC = () => {
 
 export const catalogEntry = {
   name: 'GlassShowcaseStack',
+  category: 'card',
   description: '4 张霓虹玻璃卡层叠堆叠 — 从中心扇面展开，staggered 入场',
   params: {},
 };

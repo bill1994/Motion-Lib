@@ -506,6 +506,7 @@ export const HeroReveal: React.FC<HeroRevealProps> = ({
 
 export const catalogEntry = {
   name: 'HeroReveal',
+  category: 'entrance',
   description: '物理弹道发射 + 慢动作展示',
   params: {
     seed: { type: 'string', default: '"default"', desc: '随机种子，确保轨迹可复现' },

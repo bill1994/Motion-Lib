@@ -169,3 +169,12 @@ export const WordReveal: React.FC<WordRevealProps> = ({
     </div>
   );
 };
+
+export const catalogEntry = {
+  name: 'WordReveal',
+  category: 'typography',
+  description: '单词逐字从左至右展开揭示',
+  params: {
+    text: { type: 'string', default: '"Crafting Motion"', desc: '显示文字' },
+  },
+};

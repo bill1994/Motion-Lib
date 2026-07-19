@@ -303,6 +303,7 @@ export const AnimeDrop: React.FC<AnimeDropProps> = ({
 
 export const catalogEntry = {
   name: 'AnimeDrop',
+  category: 'entrance',
   description: '动漫式爆发弹入 + 重力下落 + 弹簧归位',
   params: {
     targetSize: { type: 'number', desc: '主体正方形边长（px），默认画面宽度 30%' },

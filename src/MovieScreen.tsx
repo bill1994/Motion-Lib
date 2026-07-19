@@ -341,6 +341,7 @@ export const MovieScreen: React.FC<MovieScreenProps> = ({
 
 export const catalogEntry = {
   name: "MovieScreen",
+  category: 'transition',
   description:
     "百叶窗 (Venetian Blind) Track Matte 转场 — 21列纵向叶片 + CRT弧面屏幕 + zoom in 至全屏",
   params: {

@@ -203,6 +203,7 @@ export const SceneTransition: React.FC = () => {
 
 export const catalogEntry = {
   name: 'SceneTransition',
+  category: 'transition',
   description: 'SVG 多边形旋转缩放转场',
   params: {},
 };

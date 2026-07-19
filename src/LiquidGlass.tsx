@@ -399,6 +399,7 @@ export const LiquidGlass: React.FC<LiquidGlassProps> = ({ children }) => {
 
 export const catalogEntry = {
   name: 'LiquidGlass',
+  category: 'vfx',
   description: '3D 液体玻璃质感面板',
   params: {},
 };

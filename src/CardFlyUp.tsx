@@ -239,6 +239,7 @@ export const CardFlyUp: React.FC<CardFlyUpProps> = ({
 
 export const catalogEntry = {
   name: "CardFlyUp",
+  category: 'card',
   description:
     "卡片从下方旋转升入 — 复现 incredibles.dev s__usp-wrapper 动效",
   params: {

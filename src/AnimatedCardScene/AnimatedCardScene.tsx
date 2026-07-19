@@ -115,6 +115,7 @@ export const AnimatedCardScene: React.FC<AnimatedCardSceneProps> = ({
 
 export const catalogEntry = {
   name: 'AnimatedCardScene',
+  category: 'card',
   description: '3D 卡片弹出 + 粒子爆发动效 — 三段式（出场/悬停呼吸/退场）',
   params: {
     seed: { type: 'string', default: '"default"', desc: '随机种子，确保粒子确定性生成' },

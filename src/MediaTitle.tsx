@@ -182,6 +182,7 @@ export const MediaTitle: React.FC<MediaTitleProps> = ({
 
 export const catalogEntry = {
   name: 'MediaTitle',
+  category: 'typography',
   description: '背景面板从左展开 + 字符从底部滑入',
   params: {
     text: { type: 'string', default: '"media"', desc: '标题文字' },

@@ -297,6 +297,7 @@ export const CharReveal: React.FC<CharRevealProps> = ({
 
 export const catalogEntry = {
   name: 'CharReveal',
+  category: 'typography',
   description: '字符从底部 3D 翻转显现（rotationX:90→0）',
   params: {
     text: { type: 'string', default: '"ZHanWeiFU"', desc: '显示的文字' },

@@ -135,6 +135,7 @@ export const GridReveal: React.FC<GridRevealProps> = ({
 
 export const catalogEntry = {
   name: 'GridReveal',
+  category: 'entrance',
   description: '网格细胞径向波纹展开 + 标题淡入',
   params: {
     cols: { type: 'number', default: '6', desc: '网格列数' },

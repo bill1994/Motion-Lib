@@ -55,7 +55,7 @@ Wave 2: commit + push
 ## Todos
 > Implementation + Test = ONE todo. Never separate.
 <!-- APPEND TASK BATCHES BELOW THIS LINE WITH edit/apply_patch - never rewrite the headers above. -->
-- [ ] 1. Add `.omo/run-continuation/` to `.gitignore`
+- [x] 1. Add `.omo/run-continuation/` to `.gitignore`
   What to do / Must NOT do: Append a line `.omo/run-continuation/` to `.gitignore`. Do NOT overwrite existing content. Do NOT add any other entries.
   Parallelization: Wave 1 | Blocked by: — | Blocks: 2
   References: `.gitignore` (read first, then edit)
@@ -63,7 +63,7 @@ Wave 2: commit + push
   QA scenarios: verify with `grep` after edit. Evidence `.omo/evidence/task-1-push-to-github.txt`
   Commit: N (part of the big commit in todo 3)
 
-- [ ] 2. Untrack tracked run-continuation files
+- [x] 2. Untrack tracked run-continuation files
   What to do / Must NOT do: Run `git rm --cached .omo/run-continuation/*.json` to stop tracking all session cache files without deleting them from disk. Must NOT add `--force` or any other flag.
   Parallelization: Wave 1 | Blocked by: 1 | Blocks: 3
   References: `.omo/run-continuation/` directory (verify files exist with `ls`)
@@ -71,7 +71,7 @@ Wave 2: commit + push
   QA scenarios: `git status --short .omo/run-continuation/` should show `??` (untracked) or nothing if gitignored. Evidence same as task 1.
   Commit: N
 
-- [ ] 3. Stage and commit all remaining changes
+- [x] 3. Stage and commit all remaining changes
   What to do / Must NOT do: Stage everything: `git add -A`. The `.omo/run-continuation/` files are now gitignored+untracked so they won't be included. Commit with message: `chore: push current project state to GitHub`. Must NOT stage any file individually or selectively — let `-A` handle it. Must NOT include `.omo/run-continuation/` files (verify with `git status --short` before committing).
   Parallelization: Wave 2 | Blocked by: 2 | Blocks: 4
   References: `git status` output from exploration session
@@ -79,7 +79,7 @@ Wave 2: commit + push
   QA scenarios: Check `git status --short` shows no staged/modified files other than possibly gitignored ones. Evidence `.omo/evidence/task-3-push-to-github.txt`
   Commit: Y | `chore: push current project state to GitHub`
 
-- [ ] 4. Push to origin master
+- [x] 4. Push to origin master
   What to do / Must NOT do: Run `git push origin master`. Must NOT use `--force`. Must NOT push any other branch.
   Parallelization: Wave 2 | Blocked by: 3 | Blocks: —
   References: `git remote -v` (confirm origin URL)
@@ -89,9 +89,9 @@ Wave 2: commit + push
 
 ## Final verification wave
 > Runs in parallel after ALL todos. ALL must APPROVE. Surface results and wait for the user's explicit okay before declaring complete.
-- [ ] F1. Plan compliance audit — verify all 4 todos completed, no scope creep
-- [ ] F2. Remote verification — `git log --oneline origin/master -3` shows the latest commit
-- [ ] F3. Real manual QA — `gh repo view bill1994/motion-lib --json name,url` to confirm remote repo is up to date
+- [x] F1. Plan compliance audit — verify all 4 todos completed, no scope creep
+- [x] F2. Remote verification — `git log --oneline origin/master -3` shows the latest commit
+- [x] F3. Real manual QA — `gh repo view bill1994/motion-lib --json name,url` to confirm remote repo is up to date
 
 ## Commit strategy
 Single commit: `chore: push current project state to GitHub`
@@ -102,3 +102,10 @@ Excludes: `.omo/run-continuation/` files
 - `git status` shows clean working tree
 - `git log origin/master..master` shows 0 commits (all pushed)
 - GitHub repo `bill1994/motion-lib` has the latest state with the commit visible
+
+## Evidence
+- Commit: `769b5ff` — `chore: push current project state to GitHub` (181 files, +1813/-2372)
+- git status: clean, branch up to date with origin/master
+- Push: `git push origin master` — new branch created, all 7 commits pushed
+- Remote: verified via `gh repo view` — `bill1994/Motion-Lib` (redirected from motion-lib)
+- Note: GitHub redirected to `bill1994/Motion-Lib` (capitalized); update remote if desired

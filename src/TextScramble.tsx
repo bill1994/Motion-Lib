@@ -131,6 +131,7 @@ export const TextScramble: React.FC<TextScrambleProps> = ({
 
 export const catalogEntry = {
   name: 'TextScramble',
+  category: 'typography',
   description: '字符乱码翻滚→逐步稳定为目标文字',
   params: {
     text: { type: 'string', default: '"ZhanWeiFu"', desc: '显示的目标文字' },

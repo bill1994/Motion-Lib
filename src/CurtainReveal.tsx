@@ -169,6 +169,7 @@ export const CurtainReveal: React.FC<CurtainRevealProps> = ({
 
 export const catalogEntry = {
   name: 'CurtainReveal',
+  category: 'entrance',
   description: '竖向帘幕柱 reveal / cover / cycle',
   params: {
     direction: { type: 'enum', default: 'horizontal', values: ['horizontal', 'vertical'], desc: '帘幕方向' },

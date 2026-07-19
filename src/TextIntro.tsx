@@ -191,6 +191,7 @@ export const TextIntro: React.FC<TextIntroProps> = ({
 
 export const catalogEntry = {
   name: 'TextIntro',
+  category: 'typography',
   description: '字符逐字弹性弹入（y:100%→0, back.out）',
   params: {
     mainText: { type: 'string', default: '"ZhanWeiFu"', desc: '主标题文字' },

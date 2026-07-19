@@ -1,11 +1,11 @@
 {
   "schema_version": 2,
-  "active_work_id": "push-to-github",
+  "active_work_id": "composition-catalog",
   "works": {
-    "push-to-github": {
-      "work_id": "push-to-github",
-      "active_plan": ".omo/plans/push-to-github.md",
-      "plan_name": "push-to-github",
+    "composition-catalog": {
+      "work_id": "composition-catalog",
+      "active_plan": ".omo/plans/composition-catalog.md",
+      "plan_name": "composition-catalog",
       "session_ids": ["codex:current"],
       "status": "active",
       "worktree_path": null
