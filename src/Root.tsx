@@ -15,6 +15,8 @@ import { ClawdAction } from "./ClawdAction";
 import { CardFlyUp } from "./CardFlyUp";
 import { AnimatedCardScene } from "./AnimatedCardScene/AnimatedCardScene";
 import { WordReveal } from "./WordReveal";
+import { GlassTitleCard } from "./GlassCard/GlassTitleCard";
+import { GlassShowcaseStack } from "./GlassCard/GlassShowcaseStack";
 
 /**
  * 为输出 ProRes 4444 透明视频预置默认编码参数
@@ -174,6 +176,24 @@ export const RemotionRoot: React.FC = () => {
         defaultProps={{
           text: "Crafting Motion",
         }}
+      />
+      <Composition
+        id="GlassTitleCard"
+        component={GlassTitleCard as unknown as React.FC<Record<string, unknown>>}
+        durationInFrames={180}
+        fps={60}
+        width={1920}
+        height={1080}
+        calculateMetadata={calculateMetadata}
+      />
+      <Composition
+        id="GlassShowcaseStack"
+        component={GlassShowcaseStack as unknown as React.FC<Record<string, unknown>>}
+        durationInFrames={240}
+        fps={60}
+        width={1920}
+        height={1080}
+        calculateMetadata={calculateMetadata}
       />
     </>
   );
