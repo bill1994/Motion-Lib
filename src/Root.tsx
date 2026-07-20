@@ -2,19 +2,17 @@ import "./index.css";
 import { Composition, CalculateMetadataFunction } from "remotion";
 import { MyComposition } from "./Composition";
 import { HeroReveal } from "./HeroReveal";
-import { TextIntro } from "./TextIntro";
+import { TitleReveal } from "./TitleReveal";
 import { LiquidGlass } from "./LiquidGlass";
 import { WaterOrb } from "./WaterOrb";
 import { TextScramble } from "./TextScramble";
 import { GridReveal } from "./GridReveal";
 import { CurtainReveal } from "./CurtainReveal";
-import { MediaTitle } from "./MediaTitle";
 import { MovieScreen } from "./MovieScreen";
 import { ClawdScene } from "./ClawdScene";
 import { AnimatedCardScene } from "./AnimatedCardScene/AnimatedCardScene";
 import { WordReveal } from "./WordReveal";
 import { GlassCard } from "./GlassCard/GlassCard";
-import { CharReveal } from "./CharReveal";
 import { SceneTransition } from "./SceneTransition";
 
 /**
@@ -81,7 +79,7 @@ export const RemotionRoot: React.FC = () => {
       {/* ================================================================ */}
       <Composition
         id="TextIntro"
-        component={TextIntro}
+        component={() => <TitleReveal mode="slideUp" />}
         durationInFrames={180}
         fps={60}
         width={1920}
@@ -111,7 +109,7 @@ export const RemotionRoot: React.FC = () => {
       />
       <Composition
         id="MediaTitle"
-        component={MediaTitle}
+        component={() => <TitleReveal mode="panel" text="media" />}
         durationInFrames={180}
         fps={60}
         width={1920}
@@ -129,15 +127,12 @@ export const RemotionRoot: React.FC = () => {
       />
       <Composition
         id="CharReveal"
-        component={CharReveal as unknown as React.FC<Record<string, unknown>>}
+        component={() => <TitleReveal mode="flip3d" text="ZHanWeiFU" />}
         durationInFrames={180}
         fps={60}
         width={1920}
         height={1080}
         calculateMetadata={calculateMetadata}
-        defaultProps={{
-          text: "ZHanWeiFU",
-        }}
       />
       {/* ================================================================ */}
       {/* Card — 卡片动画                                                   */}
