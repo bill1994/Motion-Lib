@@ -17,6 +17,8 @@ import { AnimatedCardScene } from "./AnimatedCardScene/AnimatedCardScene";
 import { WordReveal } from "./WordReveal";
 import { GlassTitleCard } from "./GlassCard/GlassTitleCard";
 import { GlassShowcaseStack } from "./GlassCard/GlassShowcaseStack";
+import { CharReveal } from "./CharReveal";
+import { SceneTransition } from "./SceneTransition";
 
 /**
  * 为输出 ProRes 4444 透明视频预置默认编码参数
@@ -83,6 +85,18 @@ export const RemotionRoot: React.FC = () => {
         width={1920}
         height={1080}
         calculateMetadata={calculateMetadata}
+      />
+      <Composition
+        id="CharReveal"
+        component={CharReveal as unknown as React.FC<Record<string, unknown>>}
+        durationInFrames={180}
+        fps={60}
+        width={1920}
+        height={1080}
+        calculateMetadata={calculateMetadata}
+        defaultProps={{
+          text: "ZHanWeiFU",
+        }}
       />
       {/* ================================================================ */}
       {/* Card — 卡片动画                                                   */}
@@ -165,6 +179,15 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="MovieScreen"
         component={MovieScreen}
+        durationInFrames={180}
+        fps={60}
+        width={1920}
+        height={1080}
+        calculateMetadata={calculateMetadata}
+      />
+      <Composition
+        id="SceneTransition"
+        component={SceneTransition as unknown as React.FC<Record<string, unknown>>}
         durationInFrames={180}
         fps={60}
         width={1920}
