@@ -4,10 +4,13 @@ export interface MotionTimelineConfig {
   outroDuration: number;
 }
 
+import type { EntranceStyle } from './types';
+
 export interface MotionCardConfig {
   breathingAmplitude: number;
   breathingCycle: number;
   rotateYStart: number;
+  entranceStyle: EntranceStyle;
 }
 
 export interface MotionParticleConfig {
@@ -37,6 +40,7 @@ export const DEFAULT_MOTION_CONFIG: MotionConfig = {
     breathingAmplitude: 10,
     breathingCycle: 50,
     rotateYStart: 360,
+    entranceStyle: 'default',
   },
   particle: {
     count: 70,

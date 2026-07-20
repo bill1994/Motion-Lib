@@ -10,13 +10,10 @@ import { GridReveal } from "./GridReveal";
 import { CurtainReveal } from "./CurtainReveal";
 import { MediaTitle } from "./MediaTitle";
 import { MovieScreen } from "./MovieScreen";
-import { ClawdDrop } from "./ClawdDrop";
-import { ClawdAction } from "./ClawdAction";
-import { CardFlyUp } from "./CardFlyUp";
+import { ClawdScene } from "./ClawdScene";
 import { AnimatedCardScene } from "./AnimatedCardScene/AnimatedCardScene";
 import { WordReveal } from "./WordReveal";
-import { GlassTitleCard } from "./GlassCard/GlassTitleCard";
-import { GlassShowcaseStack } from "./GlassCard/GlassShowcaseStack";
+import { GlassCard } from "./GlassCard/GlassCard";
 import { CharReveal } from "./CharReveal";
 import { SceneTransition } from "./SceneTransition";
 
@@ -30,6 +27,50 @@ const calculateMetadata: CalculateMetadataFunction<Record<string, unknown>> = as
     defaultPixelFormat: "yuva444p10le",
     defaultProResProfile: "4444",
   };
+};
+
+const GlassTitleCard: React.FC = () => (
+  <GlassCard variant="title" cardWidth={800} cardHeight={400}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 12 }}>
+      <h1 style={{ margin: 0, fontSize: 72, fontWeight: 800, color: '#CBC0D3', letterSpacing: '0.05em', lineHeight: 1.1, textAlign: 'center' }}>
+        DIMENSIONAL<br />INTERFACE
+      </h1>
+      <p style={{ margin: 0, fontSize: 20, fontWeight: 400, color: '#4E4D5C', letterSpacing: '0.15em', textTransform: 'uppercase' }}>
+        Glass · Neon · Depth
+      </p>
+    </div>
+  </GlassCard>
+);
+
+const GlassShowcaseStack: React.FC = () => {
+  const CARDS = [
+    { label: '01', sub: 'Signal',    fanAngle: -6, offsetX: -220, offsetY: -30 },
+    { label: '02', sub: 'Mesh',      fanAngle: -2, offsetX: -70,  offsetY: -70 },
+    { label: '03', sub: 'Vault',     fanAngle: 2,  offsetX: 70,   offsetY: -70 },
+    { label: '04', sub: 'Pulse',     fanAngle: 6,  offsetX: 220,  offsetY: -30 },
+  ];
+  return (
+    <div style={{ position: 'absolute', inset: 0 }}>
+      {CARDS.map((card, i) => (
+        <GlassCard
+          key={card.label}
+          variant="showcase"
+          cardWidth={260}
+          cardHeight={340}
+          durationInFrames={240}
+          delay={i * 20}
+          fanAngle={card.fanAngle}
+          fanOffsetX={card.offsetX}
+          fanOffsetY={card.offsetY}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 8 }}>
+            <span style={{ fontSize: 48, fontWeight: 800, color: '#CBC0D3', lineHeight: 1 }}>{card.label}</span>
+            <span style={{ fontSize: 16, fontWeight: 500, color: '#4E4D5C', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{card.sub}</span>
+          </div>
+        </GlassCard>
+      ))}
+    </div>
+  );
 };
 
 export const RemotionRoot: React.FC = () => {
@@ -103,8 +144,23 @@ export const RemotionRoot: React.FC = () => {
       {/* ================================================================ */}
       <Composition
         id="CardFlyUp"
-        component={CardFlyUp}
-        durationInFrames={120}
+        component={() => (
+          <AnimatedCardScene
+            entranceStyle="cardFlyUp"
+            startX={800}
+            startY={960}
+            cardWidth={320}
+            cardHeight={420}
+            backgroundColor="#2b2b2b"
+            boxShadow="0 8px 32px rgba(0,0,0,0.3)"
+            config={{
+              timeline: { introDuration: 76, holdDuration: 14, outroDuration: 0 },
+              card: { breathingAmplitude: 0, breathingCycle: 60, rotateYStart: 0, entranceStyle: 'cardFlyUp' },
+              particle: { count: 0, gravity: 0.3, drag: 0.95, minSpeed: 0, maxSpeed: 0, minSize: 0, maxSize: 0, fadeDuration: 0 },
+            }}
+          />
+        )}
+        durationInFrames={90}
         fps={60}
         width={1920}
         height={1080}
@@ -220,7 +276,7 @@ export const RemotionRoot: React.FC = () => {
       {/* ================================================================ */}
       <Composition
         id="ClawdDrop"
-        component={ClawdDrop}
+        component={() => <ClawdScene routine="drop" />}
         durationInFrames={180}
         fps={60}
         width={1920}
@@ -229,7 +285,7 @@ export const RemotionRoot: React.FC = () => {
       />
       <Composition
         id="ClawdAction"
-        component={ClawdAction}
+        component={() => <ClawdScene routine="action" />}
         durationInFrames={180}
         fps={60}
         width={1920}

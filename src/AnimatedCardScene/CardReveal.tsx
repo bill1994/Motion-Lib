@@ -1,7 +1,7 @@
 import React from 'react';
 import { interpolate, spring, Easing } from 'remotion';
 import type { MotionConfig } from './config';
-import type { PhaseInfo } from './types';
+import type { PhaseInfo, EntranceStyle } from './types';
 
 interface CardRevealProps {
   children?: React.ReactNode;
@@ -17,6 +17,7 @@ interface CardRevealProps {
   borderRadius?: number;
   backgroundColor?: string;
   boxShadow?: string;
+  entranceStyle?: EntranceStyle;
 }
 
 function computePhase(frame: number, config: MotionConfig): PhaseInfo {
@@ -45,13 +46,111 @@ const CardReveal: React.FC<CardRevealProps> = ({
   borderRadius = 16,
   backgroundColor = '#ffffff',
   boxShadow,
+  entranceStyle = 'default',
 }) => {
   const centerX = (width - cardWidth) / 2;
   const centerY = (height - cardHeight) / 2;
 
-  const { phase } = computePhase(frame, config);
   const { introDuration, holdDuration, outroDuration } = config.timeline;
   const { breathingAmplitude, breathingCycle, rotateYStart } = config.card;
+
+  if (entranceStyle === 'cardFlyUp') {
+    const CARD_FLY_UP_DURATION = introDuration + holdDuration;
+    const totalProgress = Math.min(frame / CARD_FLY_UP_DURATION, 1);
+
+    const POWER2_IN_OUT = Easing.bezier(0.45, 0.05, 0.55, 0.95);
+    const START_ROTATE_X = 90;
+    const START_TRANSLATE_Z = 750;
+    const OPACITY_FADE_DURATION = 0.2;
+    const SETTLE_START = 0.85;
+    const SETTLE_DURATION = 0.15;
+
+    const flyRotateX = interpolate(totalProgress, [0, 1], [START_ROTATE_X, 0], {
+      easing: POWER2_IN_OUT,
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    });
+    const flyTranslateZ = interpolate(totalProgress, [0, 1], [START_TRANSLATE_Z, 0], {
+      easing: POWER2_IN_OUT,
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    });
+    const flyY = interpolate(totalProgress, [0, 1], [startY, centerY], {
+      easing: POWER2_IN_OUT,
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    });
+    const flyOpacity = interpolate(totalProgress, [0, OPACITY_FADE_DURATION], [0, 1], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    });
+
+    let scaleSettle = 1;
+    let rotateSettle = 0;
+    if (totalProgress > SETTLE_START) {
+      const settleProgress = Math.min(
+        Math.max((totalProgress - SETTLE_START) / SETTLE_DURATION, 0),
+        1,
+      );
+      const settle = spring({
+        frame: settleProgress * 30,
+        fps,
+        config: { stiffness: 200, damping: 15, mass: 0.5 },
+      });
+      scaleSettle = 1 + (settle - 1) * 0.015;
+      rotateSettle = (settle - 1) * 1.0;
+    }
+
+    const renderScale = scaleSettle;
+    const renderRotateX = flyRotateX + rotateSettle;
+
+    return (
+      <div style={{ position: 'relative', width, height }}>
+        <div
+          style={{
+            position: 'absolute',
+            left: centerX,
+            top: flyY,
+            width: cardWidth,
+            height: cardHeight,
+            borderRadius,
+            backgroundColor,
+            boxShadow,
+            opacity: flyOpacity,
+            transform: `perspective(1200px) rotateX(${renderRotateX}deg) translateZ(${flyTranslateZ}px) scale(${renderScale})`,
+            transformOrigin: '50% -20%',
+            transformStyle: 'preserve-3d',
+            backfaceVisibility: 'hidden',
+          }}
+        >
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              borderRadius,
+              overflow: 'hidden',
+              backfaceVisibility: 'hidden',
+              transform: 'translateZ(6px)',
+            }}
+          >
+            {children}
+          </div>
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              borderRadius,
+              backgroundColor,
+              backfaceVisibility: 'hidden',
+              transform: 'rotateY(180deg) translateZ(6px)',
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  const { phase } = computePhase(frame, config);
 
   let x: number;
   let y: number;

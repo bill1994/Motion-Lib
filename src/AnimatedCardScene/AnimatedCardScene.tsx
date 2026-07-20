@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useCurrentFrame, useVideoConfig } from 'remotion';
-import type { CardContentProps } from './types';
+import type { CardContentProps, EntranceStyle } from './types';
 import type { PartialMotionConfig } from './config';
 import { mergeConfig } from './config';
 import { createParticles } from './particleUtils';
@@ -19,6 +19,7 @@ export interface AnimatedCardSceneProps extends Omit<CardContentProps, 'title'> 
   borderRadius?: number;
   backgroundColor?: string;
   boxShadow?: string;
+  entranceStyle?: EntranceStyle;
   children?: React.ReactNode;
 }
 
@@ -37,6 +38,7 @@ export const AnimatedCardScene: React.FC<AnimatedCardSceneProps> = ({
   borderRadius = 24,
   backgroundColor = '#2b2b2b',
   boxShadow,
+  entranceStyle = 'default',
   children,
 }) => {
   const frame = useCurrentFrame();
@@ -97,6 +99,7 @@ export const AnimatedCardScene: React.FC<AnimatedCardSceneProps> = ({
           borderRadius={borderRadius}
           backgroundColor={backgroundColor}
           boxShadow={boxShadow}
+          entranceStyle={entranceStyle}
         >
           {children ?? (
             <DefaultCardContent

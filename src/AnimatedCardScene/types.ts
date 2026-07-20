@@ -16,6 +16,8 @@ export interface ParticleState {
   delay: number
 }
 
+export type EntranceStyle = 'default' | 'cardFlyUp'
+
 export type CardPhase = 'intro' | 'hold' | 'outro'
 
 export interface PhaseInfo {
