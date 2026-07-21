@@ -2,6 +2,7 @@ import React from 'react';
 import { interpolate, spring, Easing } from 'remotion';
 import type { MotionConfig } from './config';
 import type { PhaseInfo, EntranceStyle } from './types';
+import GlowEdge from './GlowEdge';
 
 interface CardRevealProps {
   children?: React.ReactNode;
@@ -18,6 +19,10 @@ interface CardRevealProps {
   backgroundColor?: string;
   boxShadow?: string;
   entranceStyle?: EntranceStyle;
+  glowEdgeEnabled?: boolean;
+  glowEdgeColor?: string;
+  glowEdgeIntensity?: number;
+  glowEdgeRotationDuration?: number;
 }
 
 function computePhase(frame: number, config: MotionConfig): PhaseInfo {
@@ -41,18 +46,84 @@ const CardReveal: React.FC<CardRevealProps> = ({
   height,
   frame,
   fps,
-  cardWidth = 320,
-  cardHeight = 420,
+  cardWidth = 400,
+  cardHeight = 600,
   borderRadius = 16,
-  backgroundColor = '#ffffff',
-  boxShadow,
+  backgroundColor = 'rgb(203,192,211)',
+  boxShadow = '0 8px 32px rgba(0,0,0,0.08)',
   entranceStyle = 'default',
+  glowEdgeEnabled = true,
+  glowEdgeColor = '#CBC0D3',
+  glowEdgeIntensity = 2.0,
+  glowEdgeRotationDuration = 120,
 }) => {
+  const resolvedCardHeight = cardHeight ?? 280;
   const centerX = (width - cardWidth) / 2;
-  const centerY = (height - cardHeight) / 2;
+  const centerY = (height - resolvedCardHeight) / 2;
 
   const { introDuration, holdDuration, outroDuration } = config.timeline;
   const { breathingAmplitude, breathingCycle, rotateYStart } = config.card;
+
+  const glowEdge = (
+    <GlowEdge
+      width={cardWidth}
+      height={resolvedCardHeight}
+      frame={frame}
+      borderRadius={borderRadius}
+      color={glowEdgeColor}
+      intensity={glowEdgeIntensity}
+      rotationDuration={glowEdgeRotationDuration}
+      enabled={glowEdgeEnabled}
+    />
+  );
+
+  const insideIllumination = (
+    <div style={{
+      position: 'absolute' as const,
+      inset: 0,
+      borderRadius,
+      zIndex: 1,
+      mixBlendMode: 'soft-light' as const,
+      opacity: 0.6,
+      background: [
+        'radial-gradient(at 80% 55%, hsla(268,100%,76%,0.3) 0px, transparent 50%)',
+        'radial-gradient(at 69% 34%, hsla(349,100%,74%,0.3) 0px, transparent 50%)',
+        'radial-gradient(at 8% 6%, hsla(136,100%,78%,0.3) 0px, transparent 50%)',
+        'radial-gradient(at 41% 38%, hsla(192,100%,64%,0.3) 0px, transparent 50%)',
+        'radial-gradient(at 86% 85%, hsla(186,100%,74%,0.3) 0px, transparent 50%)',
+        'radial-gradient(at 82% 18%, hsla(52,100%,65%,0.3) 0px, transparent 50%)',
+        'radial-gradient(at 51% 4%, hsla(12,100%,72%,0.3) 0px, transparent 50%)',
+        'linear-gradient(#c299ff 0 100%)',
+      ].join(', '),
+      maskImage: [
+        'linear-gradient(to bottom, black, black)',
+        'radial-gradient(ellipse at 50% 50%, black 40%, transparent 65%)',
+        'radial-gradient(ellipse at 66% 66%, black 5%, transparent 40%)',
+        'radial-gradient(ellipse at 33% 33%, black 5%, transparent 40%)',
+        'radial-gradient(ellipse at 66% 33%, black 5%, transparent 40%)',
+        'radial-gradient(ellipse at 33% 66%, black 5%, transparent 40%)',
+      ].join(', '),
+      WebkitMaskImage: [
+        'linear-gradient(to bottom, black, black)',
+        'radial-gradient(ellipse at 50% 50%, black 40%, transparent 65%)',
+        'radial-gradient(ellipse at 66% 66%, black 5%, transparent 40%)',
+        'radial-gradient(ellipse at 33% 33%, black 5%, transparent 40%)',
+        'radial-gradient(ellipse at 66% 33%, black 5%, transparent 40%)',
+        'radial-gradient(ellipse at 33% 66%, black 5%, transparent 40%)',
+      ].join(', '),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      maskComposite: 'subtract,add,add,add,add,add' as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      WebkitMaskComposite: 'subtract,add,add,add,add,add' as any,
+      pointerEvents: 'none' as const,
+    }} />
+  );
+
+  const contentLayer = (
+    <div style={{ position: 'absolute', inset: 0, borderRadius, overflow: 'hidden', zIndex: 2 }}>
+      {children}
+    </div>
+  );
 
   if (entranceStyle === 'cardFlyUp') {
     const CARD_FLY_UP_DURATION = introDuration + holdDuration;
@@ -112,39 +183,20 @@ const CardReveal: React.FC<CardRevealProps> = ({
             left: centerX,
             top: flyY,
             width: cardWidth,
-            height: cardHeight,
+            height: resolvedCardHeight,
             borderRadius,
             backgroundColor,
             boxShadow,
             opacity: flyOpacity,
             transform: `perspective(1200px) rotateX(${renderRotateX}deg) translateZ(${flyTranslateZ}px) scale(${renderScale})`,
             transformOrigin: '50% -20%',
-            transformStyle: 'preserve-3d',
-            backfaceVisibility: 'hidden',
+            isolation: 'isolate',
           }}
         >
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              borderRadius,
-              overflow: 'hidden',
-              backfaceVisibility: 'hidden',
-              transform: 'translateZ(6px)',
-            }}
-          >
-            {children}
-          </div>
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              borderRadius,
-              backgroundColor,
-              backfaceVisibility: 'hidden',
-              transform: 'rotateY(180deg) translateZ(6px)',
-            }}
-          />
+          <div style={{ position: 'absolute', inset: 0, borderRadius, backgroundColor, backfaceVisibility: 'hidden', transform: 'rotateY(180deg) translateZ(6px)', zIndex: 0 }} />
+          {insideIllumination}
+          {contentLayer}
+          {glowEdge}
         </div>
       </div>
     );
@@ -189,7 +241,7 @@ const CardReveal: React.FC<CardRevealProps> = ({
       y =
         centerY +
         breathingAmplitude *
-          Math.sin((2 * Math.PI * localHoldFrame) / breathingCycle);
+        Math.sin((2 * Math.PI * localHoldFrame) / breathingCycle);
       scale = 1;
       rotateY = 0;
       break;
@@ -226,18 +278,18 @@ const CardReveal: React.FC<CardRevealProps> = ({
           left: x,
           top: y,
           width: cardWidth,
-          height: cardHeight,
+          height: resolvedCardHeight,
           borderRadius,
           backgroundColor,
           boxShadow,
           transform: `perspective(1200px) scale(${scale}) rotateY(${rotateY}deg)`,
-          transformStyle: 'preserve-3d',
+          isolation: 'isolate',
         }}
       >
-        <div style={{ position: 'absolute', inset: 0, borderRadius, overflow: 'hidden', backfaceVisibility: 'hidden', transform: 'translateZ(6px)' }}>
-          {children}
-        </div>
-        <div style={{ position: 'absolute', inset: 0, borderRadius, backgroundColor, backfaceVisibility: 'hidden', transform: 'rotateY(180deg) translateZ(6px)' }} />
+        <div style={{ position: 'absolute', inset: 0, borderRadius, backgroundColor, backfaceVisibility: 'hidden', transform: 'rotateY(180deg) translateZ(6px)', zIndex: 0 }} />
+        {insideIllumination}
+        {contentLayer}
+        {glowEdge}
       </div>
     </div>
   );

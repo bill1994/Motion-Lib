@@ -174,6 +174,12 @@ export const RemotionRoot: React.FC = () => {
           subtitle: "Subtitle",
           description: "A beautifully animated card scene with particle burst effects.",
           seed: "default",
+          cardWidth: 672,
+          glowEdgeEnabled: true,
+          glowEdgeColor: "#CBC0D3",
+          glowEdgeIntensity: 2.0,
+          glowEdgeRotationDuration: 120,
+
         }}
       />
       <Composition

@@ -21,6 +21,10 @@ export interface AnimatedCardSceneProps extends Omit<CardContentProps, 'title'> 
   boxShadow?: string;
   entranceStyle?: EntranceStyle;
   children?: React.ReactNode;
+  glowEdgeEnabled?: boolean;
+  glowEdgeColor?: string;
+  glowEdgeIntensity?: number;
+  glowEdgeRotationDuration?: number;
 }
 
 export const AnimatedCardScene: React.FC<AnimatedCardSceneProps> = ({
@@ -33,13 +37,17 @@ export const AnimatedCardScene: React.FC<AnimatedCardSceneProps> = ({
   startY: startYProp,
   seed = 'default',
   config,
-  cardWidth = 320,
-  cardHeight = 420,
+  cardWidth = 672,
+  cardHeight,
   borderRadius = 24,
-  backgroundColor = '#2b2b2b',
-  boxShadow,
+  backgroundColor = 'rgb(203,192,211)',
+  boxShadow = '0 8px 32px rgba(0,0,0,0.08)',
   entranceStyle = 'default',
   children,
+  glowEdgeEnabled = true,
+  glowEdgeColor = '#CBC0D3',
+  glowEdgeIntensity = 2.0,
+  glowEdgeRotationDuration = 120,
 }) => {
   const frame = useCurrentFrame();
   const { width, height, fps } = useVideoConfig();
@@ -100,6 +108,10 @@ export const AnimatedCardScene: React.FC<AnimatedCardSceneProps> = ({
           backgroundColor={backgroundColor}
           boxShadow={boxShadow}
           entranceStyle={entranceStyle}
+          glowEdgeEnabled={glowEdgeEnabled}
+          glowEdgeColor={glowEdgeColor}
+          glowEdgeIntensity={glowEdgeIntensity}
+          glowEdgeRotationDuration={glowEdgeRotationDuration}
         >
           {children ?? (
             <DefaultCardContent
@@ -126,8 +138,8 @@ export const catalogEntry = {
     subtitle: { type: 'string', default: '"Subtitle"', desc: '卡片副标题' },
     startX: { type: 'number', default: '300', desc: '卡片起始 X 坐标（px）' },
     startY: { type: 'number', default: 'height/2', desc: '卡片起始 Y 坐标（px）' },
-    cardWidth: { type: 'number', default: '320', desc: '卡片宽度（px）' },
-    cardHeight: { type: 'number', default: '420', desc: '卡片高度（px）' },
-    boxShadow: { type: 'string', default: '"0 4px 16px rgba(0,0,0,0.15)"', desc: '卡片阴影（CSS box-shadow 值）' },
+    cardWidth: { type: 'number', default: '672', desc: '卡片宽度（px）' },
+    cardHeight: { type: 'number', default: '—', desc: '卡片高度（px，默认等于宽度）' },
+    boxShadow: { type: 'string', default: '"0 8px 32px rgba(0,0,0,0.08)"', desc: '卡片阴影（CSS box-shadow 值）' },
   },
 };
