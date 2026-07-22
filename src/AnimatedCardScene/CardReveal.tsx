@@ -23,6 +23,8 @@ interface CardRevealProps {
   glowEdgeColor?: string;
   glowEdgeIntensity?: number;
   glowEdgeRotationDuration?: number;
+  glowEdgeIllumEnabled?: boolean;
+  glowEdgeIllumIntensity?: number;
 }
 
 function computePhase(frame: number, config: MotionConfig): PhaseInfo {
@@ -56,6 +58,8 @@ const CardReveal: React.FC<CardRevealProps> = ({
   glowEdgeColor = '#CBC0D3',
   glowEdgeIntensity = 2.0,
   glowEdgeRotationDuration = 120,
+  glowEdgeIllumEnabled = true,
+  glowEdgeIllumIntensity = 0.6,
 }) => {
   const resolvedCardHeight = cardHeight ?? 280;
   const centerX = (width - cardWidth) / 2;
@@ -82,17 +86,17 @@ const CardReveal: React.FC<CardRevealProps> = ({
       position: 'absolute' as const,
       inset: 0,
       borderRadius,
-      zIndex: 1,
+      zIndex: 3,
       mixBlendMode: 'soft-light' as const,
-      opacity: 0.6,
+      opacity: glowEdgeIllumIntensity,
       background: [
-        'radial-gradient(at 80% 55%, hsla(268,100%,76%,0.3) 0px, transparent 50%)',
-        'radial-gradient(at 69% 34%, hsla(349,100%,74%,0.3) 0px, transparent 50%)',
-        'radial-gradient(at 8% 6%, hsla(136,100%,78%,0.3) 0px, transparent 50%)',
-        'radial-gradient(at 41% 38%, hsla(192,100%,64%,0.3) 0px, transparent 50%)',
-        'radial-gradient(at 86% 85%, hsla(186,100%,74%,0.3) 0px, transparent 50%)',
-        'radial-gradient(at 82% 18%, hsla(52,100%,65%,0.3) 0px, transparent 50%)',
-        'radial-gradient(at 51% 4%, hsla(12,100%,72%,0.3) 0px, transparent 50%)',
+        'radial-gradient(at 80% 55%, hsla(268,100%,76%,1) 0px, transparent 50%)',
+        'radial-gradient(at 69% 34%, hsla(349,100%,74%,1) 0px, transparent 50%)',
+        'radial-gradient(at 8% 6%, hsla(136,100%,78%,1) 0px, transparent 50%)',
+        'radial-gradient(at 41% 38%, hsla(192,100%,64%,1) 0px, transparent 50%)',
+        'radial-gradient(at 86% 85%, hsla(186,100%,74%,1) 0px, transparent 50%)',
+        'radial-gradient(at 82% 18%, hsla(52,100%,65%,1) 0px, transparent 50%)',
+        'radial-gradient(at 51% 4%, hsla(12,100%,72%,1) 0px, transparent 50%)',
         'linear-gradient(#c299ff 0 100%)',
       ].join(', '),
       maskImage: [
@@ -194,7 +198,7 @@ const CardReveal: React.FC<CardRevealProps> = ({
           }}
         >
           <div style={{ position: 'absolute', inset: 0, borderRadius, backgroundColor, backfaceVisibility: 'hidden', transform: 'rotateY(180deg) translateZ(6px)', zIndex: 0 }} />
-          {insideIllumination}
+          {glowEdgeIllumEnabled && insideIllumination}
           {contentLayer}
           {glowEdge}
         </div>
@@ -287,7 +291,7 @@ const CardReveal: React.FC<CardRevealProps> = ({
         }}
       >
         <div style={{ position: 'absolute', inset: 0, borderRadius, backgroundColor, backfaceVisibility: 'hidden', transform: 'rotateY(180deg) translateZ(6px)', zIndex: 0 }} />
-        {insideIllumination}
+        {glowEdgeIllumEnabled && insideIllumination}
         {contentLayer}
         {glowEdge}
       </div>

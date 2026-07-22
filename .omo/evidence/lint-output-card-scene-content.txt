@@ -1,0 +1,2 @@
+> motion-lib@1.0.0 lint
+exit code 0: eslint src && tsc — no errors
