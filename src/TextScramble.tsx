@@ -7,7 +7,7 @@ interface TextScrambleProps {
   children?: React.ReactNode;
 }
 
-const POOL = "!<>-_\\/[]{}—=+*^?#%";
+const POOL = "!<>-_\\/[]{}—=+*^?#%$&";
 const STAGGER = 4;
 const SCRAMBLE = 28;
 

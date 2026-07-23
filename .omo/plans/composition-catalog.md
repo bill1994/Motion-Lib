@@ -209,10 +209,10 @@ Your next move: approve, then I dispatch execution.
   QA: happy — lint + tsc 通过 + category count ≥ 19
 
 ## Final verification wave
-- [ ] F1. `npm run lint` 零错误
-- [ ] F2. `npx tsc --noEmit` 零错误
-- [ ] F3. category 字段数 ≥ 19（覆盖所有 composition）
-- [ ] F4. Root.tsx 6 个分区注释都存在
+- [x] F1. `npm run lint` 零错误
+- [x] F2. `npx tsc --noEmit` 零错误
+- [x] F3. category 字段数 ≥ 19（覆盖所有 composition）
+- [x] F4. Root.tsx 6 个分区注释都存在
 
 ## Commit strategy
 ```

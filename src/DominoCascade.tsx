@@ -30,11 +30,10 @@ interface DominoCascadeProps {
   children?: React.ReactNode;
 }
 
-const ENTRY_DURATION = 24; // frames per block entry
-const SETTLE_DURATION = 12; // frames after all entries complete
-const DOMINO_DURATION = 24; // frames per domino fall
+const ENTRY_DURATION = 24;
+const SETTLE_DURATION = 12;
+const DOMINO_DURATION = 24;
 
-// Color utilities
 function darken(hex: string, amount: number): string {
   const num = parseInt(hex.replace("#", ""), 16);
   const r = Math.max(0, (num >> 16) - amount);
@@ -68,15 +67,12 @@ export const DominoCascade: React.FC<DominoCascadeProps> = ({
 }) => {
   const frame = useCurrentFrame();
 
-  // Derived timing
   const entryEnd = count * entryStagger + ENTRY_DURATION;
   const dominoStart = entryEnd + SETTLE_DURATION;
 
-  // Gap between blocks
-  const verticalSpacing = blockHeight + 20;
-  const gap = verticalSpacing;
+  // X gap = blockHeight so falling block touches next at 90° rotation
+  const xGap = blockHeight;
 
-  // Face colors
   const frontColor = baseColor;
   const backColor = darken(accentColor, 30);
   const topColor = lighten(baseColor, 40);
@@ -84,26 +80,22 @@ export const DominoCascade: React.FC<DominoCascadeProps> = ({
   const leftColor = accentColor;
   const rightColor = lighten(accentColor, 20);
 
-  // Y rotation per block (deterministic based on index)
   const getYRotation = (i: number) => {
     const [min, max] = yRotationRange;
-    // Simple deterministic hash based on index
     const t = ((i * 7 + i * i * 3) % 100) / 100;
     return min + t * (max - min);
   };
 
-  // Generate blocks
   const blocks: React.ReactNode[] = [];
+
   for (let i = 0; i < count; i++) {
-    // Horizontal position
-    const blockX = xOffset + (i - (count - 1) / 2) * gap;
+    // All blocks at same Y baseline, spaced horizontally by blockHeight
+    const blockX = xOffset + (i - (count - 1) / 2) * xGap;
     const blockBottom = yOffset;
 
-    // Entry phase
     const entryStart = i * entryStagger;
     const entryLocal = frame - entryStart;
 
-    // Entry Y: from below baseline to final position
     let entryProgress = 0;
     if (entryLocal <= 0) {
       entryProgress = 0;
@@ -113,16 +105,14 @@ export const DominoCascade: React.FC<DominoCascadeProps> = ({
       entryProgress = 1;
     }
 
-    const entryY = blockBottom + 300 - entryProgress * 300; // slides up 300px
+    const entryY = blockBottom + 300 - entryProgress * 300;
     const entryOpacity = interpolate(entryLocal, [-6, 0, 6], [0, 0, 1], {
       extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
     });
 
-    // Entry Y rotation (starts at 0, builds up during entry)
     const yRot = entryProgress * getYRotation(i);
 
-    // Domino phase
     let dominoRotation = 0;
     const dominoLocal = frame - dominoStart - i * dominoStagger;
     if (dominoLocal >= 0 && dominoLocal < DOMINO_DURATION) {
@@ -133,20 +123,17 @@ export const DominoCascade: React.FC<DominoCascadeProps> = ({
         { easing: Easing.in(Easing.quad), extrapolateRight: "clamp" }
       );
     } else if (dominoLocal >= DOMINO_DURATION) {
-      dominoRotation = 85; // Fully fallen
+      dominoRotation = 85;
     }
 
-    // Opacity: fade out slightly after falling
     let blockOpacity = entryOpacity;
     if (dominoLocal >= DOMINO_DURATION) {
-      blockOpacity = entryOpacity * 0.7; // dim slightly after falling
+      blockOpacity = entryOpacity * 0.7;
     }
 
-    // Block position (final)
     const blockLeft = blockX - blockWidth / 2;
     const blockTop = blockBottom - blockHeight;
 
-    // Full transform
     const transform = [
       `translateY(${entryY}px)`,
       `rotateY(${yRot}deg)`,
@@ -168,7 +155,6 @@ export const DominoCascade: React.FC<DominoCascadeProps> = ({
           opacity: blockOpacity,
         }}
       >
-        {/* Front face */}
         <div
           style={{
             position: "absolute",
@@ -201,7 +187,6 @@ export const DominoCascade: React.FC<DominoCascadeProps> = ({
           )}
         </div>
 
-        {/* Back face */}
         <div
           style={{
             position: "absolute",
@@ -213,7 +198,6 @@ export const DominoCascade: React.FC<DominoCascadeProps> = ({
           }}
         />
 
-        {/* Right face */}
         <div
           style={{
             position: "absolute",
@@ -225,7 +209,6 @@ export const DominoCascade: React.FC<DominoCascadeProps> = ({
           }}
         />
 
-        {/* Left face */}
         <div
           style={{
             position: "absolute",
@@ -237,7 +220,6 @@ export const DominoCascade: React.FC<DominoCascadeProps> = ({
           }}
         />
 
-        {/* Top face */}
         <div
           style={{
             position: "absolute",
@@ -249,7 +231,6 @@ export const DominoCascade: React.FC<DominoCascadeProps> = ({
           }}
         />
 
-        {/* Bottom face */}
         <div
           style={{
             position: "absolute",
@@ -264,6 +245,13 @@ export const DominoCascade: React.FC<DominoCascadeProps> = ({
     );
   }
 
+  const containerRotateY = interpolate(
+    frame,
+    [0, entryEnd, entryEnd + 120],
+    [0, 3, 5],
+    { extrapolateRight: "clamp", easing: Easing.out(Easing.cubic) }
+  );
+
   return (
     <div
       style={{
@@ -272,6 +260,9 @@ export const DominoCascade: React.FC<DominoCascadeProps> = ({
         backgroundColor: "transparent",
         perspective: "1500px",
         transformStyle: "preserve-3d",
+        transform: `rotateY(${containerRotateY}deg)`,
+        transformOrigin: "center center",
+        willChange: "transform",
       }}
     >
       {blocks}
