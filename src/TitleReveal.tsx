@@ -6,14 +6,19 @@ const C = {
   su: { cd: 0.6, sg: 0.05, es: "back.out(1.7)", sd: 0.5, se: "power4.out", sp: "-=0.3" },
   f3: { cd: 0.5, sg: 0.04, es: "back.out(1.7)", spd: 0.25, spe: "power2.out", per: 800 },
   pn: { bd: 0.6, be: "power3.inOut", cd: 0.5, sg: 0.06, ce: "power4.out", cs: 0.15 },
-  py: 40, px: 60, gap: 20, fs: 5,
+  py: 40, px: 60, gap: 20,   fs: 5,
+  sc: { cd: 0.7, sg: 0.04, es: "power2.out" },
+  dz: { cd: 1.0, sg: 0, es: "power3.out", blur: 20, scale: 2.5 },
+  sh: { cd: 1.2, sg: 0, es: "power2.out", sweepDur: 0.8 },
+  jw: { cd: 0.6, sg: 0.06, es: "elastic.out(1, 0.4)", squashDur: 0.12, squashEase: "power2.in" },
+  ss: { cd: 0.7, sg: 0.05, es: "power3.inOut" },
 } as const;
 
 interface TitleRevealProps {
   text?: string;
   subText?: string;
   children?: React.ReactNode;
-  mode: "slideUp" | "flip3d" | "panel";
+  mode: "slideUp" | "flip3d" | "panel" | "scramble" | "depthZoom" | "shimmer" | "jellyWave" | "splitSlide";
   staggerMode?: "sequential" | "random" | "center" | "edges";
   bgColor?: string;
   textColor?: string;
@@ -53,6 +58,9 @@ export const TitleReveal: React.FC<TitleRevealProps> = ({
   const chrs = useRef<(HTMLSpanElement | null)[]>([]);
   const sprs = useRef<(HTMLSpanElement | null)[]>([]);
   const sir = useRef<HTMLDivElement>(null);
+  const shimmerRef = useRef<HTMLDivElement>(null);
+  const tph = useRef<(HTMLSpanElement | null)[]>([]);
+  const bth = useRef<(HTMLSpanElement | null)[]>([]);
 
   const mref = useRef(mode);
   const sref = useRef(staggerMode);
@@ -62,9 +70,10 @@ export const TitleReveal: React.FC<TitleRevealProps> = ({
   suref.current = subText;
 
   const isFlip = mode === "flip3d";
-  const chars = isFlip ? [] : [...text];
+  const isSplit = mode === "splitSlide";
+  const chars = isFlip || isSplit ? [] : [...text];
   const tokens = isFlip ? tokenize(text) : [];
-  let cc = isFlip ? 0 : chars.length;
+  let cc = isFlip || isSplit ? 0 : chars.length;
   let sc = 0;
   if (isFlip) {
     for (const t of tokens) {
@@ -74,6 +83,9 @@ export const TitleReveal: React.FC<TitleRevealProps> = ({
   }
   chrs.current = chrs.current.slice(0, cc);
   if (isFlip) sprs.current = sprs.current.slice(0, sc);
+  const splitCC = [...text].length;
+  tph.current = tph.current.slice(0, splitCC);
+  bth.current = bth.current.slice(0, splitCC);
 
   useEffect(() => {
     const m = mref.current;
@@ -94,7 +106,7 @@ export const TitleReveal: React.FC<TitleRevealProps> = ({
         if (vs.length > 0) {
           tl.fromTo(vs, { opacity: 0 }, { opacity: 1, duration: C.f3.spd, stagger: C.f3.sg, ease: C.f3.spe }, 0);
         }
-      } else {
+      } else if (m === "slideUp" || m === "panel") {
         const cd = m === "slideUp" ? C.su.cd : C.pn.cd;
         const sg = m === "slideUp" ? C.su.sg : C.pn.sg;
         const es = m === "slideUp" ? C.su.es : C.pn.ce;
@@ -105,6 +117,34 @@ export const TitleReveal: React.FC<TitleRevealProps> = ({
         }
         if (m === "slideUp" && st && sir.current) {
           tl.fromTo(sir.current, { y: "100%", opacity: 0 }, { y: 0, opacity: 1, duration: C.su.sd, ease: C.su.se }, C.su.sp);
+        }
+      }
+      if (m === "scramble" && vc.length > 0) {
+        const scfg = sm === "sequential" ? C.sc.sg : { each: C.sc.sg, from: sm };
+        tl.fromTo(vc, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: C.sc.cd, stagger: scfg, ease: C.sc.es }, 0);
+      }
+      if (m === "depthZoom" && cr.current) {
+        tl.fromTo(cr.current, { scale: C.dz.scale, filter: `blur(${C.dz.blur}px)`, opacity: 0 }, { scale: 1, filter: "blur(0px)", opacity: 1, duration: C.dz.cd, ease: C.dz.es }, 0);
+      }
+      if (m === "shimmer") {
+        const tc = shimmerRef.current;
+        if (tc) {
+          tl.fromTo(tc, { backgroundPosition: "200% 0" }, { backgroundPosition: "-100% 0", duration: C.sh.sweepDur, ease: "power2.inOut" }, 0);
+          tl.fromTo(tc, { opacity: 0 }, { opacity: 1, duration: C.sh.cd, ease: C.sh.es }, 0);
+        }
+      }
+      if (m === "jellyWave" && vc.length > 0) {
+        const scfg = sm === "sequential" ? C.jw.sg : { each: C.jw.sg, from: sm };
+        tl.to(vc, { scaleY: 1.6, scaleX: 0.7, duration: C.jw.squashDur, ease: C.jw.squashEase, stagger: scfg }, 0);
+        tl.to(vc, { scaleY: 1, scaleX: 1, duration: C.jw.cd, ease: C.jw.es, stagger: scfg }, C.jw.squashDur);
+      }
+      if (m === "splitSlide") {
+        const top = tph.current.filter((e): e is HTMLSpanElement => e !== null);
+        const bot = bth.current.filter((e): e is HTMLSpanElement => e !== null);
+        if (top.length > 0) {
+          const scfg = sm === "sequential" ? C.ss.sg : { each: C.ss.sg, from: sm };
+          tl.fromTo(top, { x: "-100%" }, { x: "0%", duration: C.ss.cd, stagger: scfg, ease: C.ss.es }, 0);
+          tl.fromTo(bot, { x: "100%" }, { x: "0%", duration: C.ss.cd, stagger: scfg, ease: C.ss.es }, 0);
         }
       }
       tr.current = tl;
@@ -163,20 +203,95 @@ export const TitleReveal: React.FC<TitleRevealProps> = ({
     );
   }
 
-  return (
-    <div ref={cr} style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", backgroundColor: "transparent", fontFamily: '"MapleMono-NF-CN", sans-serif', color: textColor }}>
-      <div style={{ overflow: "hidden", padding: `${C.py}px ${C.px}px` }}>
-        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", fontSize: `${C.fs}rem`, lineHeight: 1.2, fontWeight: "bold" }}>
-          {[...text].map((ch, i) => (
-            <span key={`${i}-${ch}`} ref={(el) => { chrs.current[i] = el; }} style={{ display: "inline-block" }}>{ch === " " ? "\u00A0" : ch}</span>
-          ))}
+  if (mode === "splitSlide") {
+    return (
+      <div ref={cr} style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", backgroundColor: "transparent", fontFamily: '"MapleMono-NF-CN", sans-serif', color: textColor, overflow: "visible" }}>
+        <div style={{ overflow: "visible", padding: `${C.py}px ${C.px}px` }}>
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", fontSize: `${C.fs}rem`, lineHeight: 1.2, fontWeight: "bold" }}>
+            {[...text].map((ch, i) => (
+              <span key={`${i}-${ch}`} style={{ position: "relative", display: "inline-block" }}>
+                <span ref={(el) => { tph.current[i] = el; }} style={{ display: "inline-block", clipPath: "inset(0 0 50% 0)" }}>{ch === " " ? "\u00A0" : ch}</span>
+                <span ref={(el) => { bth.current[i] = el; }} style={{ display: "inline-block", clipPath: "inset(50% 0 0 0)" }}>{ch === " " ? "\u00A0" : ch}</span>
+              </span>
+            ))}
+          </div>
         </div>
       </div>
-      {subText && (
-        <div style={{ overflow: "hidden", padding: `0 ${C.px}px`, marginTop: C.gap }}>
-          <div ref={sir} style={{ fontSize: "1.5rem", lineHeight: 1.4, fontWeight: "normal", whiteSpace: "nowrap" }}>{subText}</div>
+    );
+  }
+
+  const isScramble = mode === "scramble";
+  const isShimmer = mode === "shimmer";
+  const isDepthZoom = mode === "depthZoom";
+  const isJellyWave = mode === "jellyWave";
+
+  const POOL = "!<>-_\\/[]{}—=+*^?#%$&";
+  const STAGGER = 4;
+  const SCRAMBLE = 28;
+
+  return (
+    <div ref={cr} style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", backgroundColor: "transparent", fontFamily: '"MapleMono-NF-CN", sans-serif', color: textColor }}>
+      <div style={{ ...(isDepthZoom ? { perspective: "800px" } : {}) }}>
+        <div
+          ref={shimmerRef}
+          style={{
+            overflow: "hidden",
+            padding: `${C.py}px ${C.px}px`,
+            ...(isShimmer ? {
+              background: "linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.9) 50%, transparent 70%)",
+              WebkitBackgroundClip: "text",
+              backgroundClip: "text",
+              color: "transparent",
+              WebkitTextFillColor: "transparent",
+              backgroundSize: "200% 100%",
+              backgroundPosition: "100% 0",
+            } : {}),
+          }}
+        >
+          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", fontSize: `${C.fs}rem`, lineHeight: 1.2, fontWeight: "bold" }}>
+            {[...text].map((ch, i) => {
+              let displayChar = ch === " " ? "\u00A0" : ch;
+              let charOpacity = 1;
+              let charFontFamily: string | undefined;
+
+              if (isScramble && ch !== " ") {
+                const startFr = i * STAGGER;
+                const settleFr = startFr + SCRAMBLE;
+                if (frame < settleFr) {
+                  const poolIdx = ((i * 7 + Math.floor(frame / 2)) * 13) % POOL.length;
+                  displayChar = POOL[poolIdx];
+                  charFontFamily = '"MapleMono-NF-CN", "Courier New", monospace';
+                  if (frame < startFr) {
+                    charOpacity = 0.15;
+                  } else {
+                    charOpacity = 0.15 + 0.85 * ((frame - startFr) / SCRAMBLE);
+                  }
+                }
+              }
+
+              return (
+                <span
+                  key={`${i}-${ch}`}
+                  ref={(el) => { chrs.current[i] = el; }}
+                  style={{
+                    display: "inline-block",
+                    ...(charOpacity !== 1 ? { opacity: charOpacity } : {}),
+                    ...(charFontFamily ? { fontFamily: charFontFamily } : {}),
+                    ...(isJellyWave ? { transformOrigin: "center bottom" } : {}),
+                  }}
+                >
+                  {displayChar}
+                </span>
+              );
+            })}
+          </div>
         </div>
-      )}
+        {subText && (
+          <div style={{ overflow: "hidden", padding: `0 ${C.px}px`, marginTop: C.gap }}>
+            <div ref={sir} style={{ fontSize: "1.5rem", lineHeight: 1.4, fontWeight: "normal", whiteSpace: "nowrap" }}>{subText}</div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -201,11 +316,36 @@ export const catalogEntry = {
       props: { mode: "flip3d", staggerMode: "sequential" },
       desc: "字符从底部 3D 翻转显现（rotationX:90→0）",
     },
+    {
+      id: "TitleRevealScramble",
+      props: { mode: "scramble" },
+      desc: "字符黑客解密乱码→逐步稳定",
+    },
+    {
+      id: "TitleRevealDepthZoom",
+      props: { mode: "depthZoom" },
+      desc: "景深推镜缩放+模糊消散",
+    },
+    {
+      id: "TitleRevealShimmer",
+      props: { mode: "shimmer" },
+      desc: "流光扫影渐变揭示（Apple风格）",
+    },
+    {
+      id: "TitleRevealJellyWave",
+      props: { mode: "jellyWave" },
+      desc: "字符果冻弹性形变弹入",
+    },
+    {
+      id: "TitleRevealSplitSlide",
+      props: { mode: "splitSlide" },
+      desc: "字符上下对切错位滑入拼接",
+    },
   ],
   params: {
     text: { type: "string", default: '"ZhanWeiFu"', desc: "显示文字" },
     subText: { type: "string", default: '""', desc: "副标题（仅 slideUp 模式）" },
-    mode: { type: "enum", default: '"slideUp"', desc: "动画模式: slideUp | flip3d | panel" },
+    mode: { type: "enum", default: '"slideUp"', desc: "动画模式: slideUp | flip3d | panel | scramble | depthZoom | shimmer | jellyWave | splitSlide" },
     staggerMode: { type: "enum", default: '"sequential"', desc: "字符出场顺序（仅 flip3d 模式）" },
     bgColor: { type: "string", default: '"#00d3ff"', desc: "背景面板颜色（仅 panel 模式）" },
     textColor: { type: "string", default: '"#ffffff"', desc: "文字颜色" },

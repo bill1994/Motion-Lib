@@ -67,7 +67,7 @@ Your next move: **Approve** this plan, or I'll run a high-accuracy Momus review 
 > Implementation + Test = ONE todo. Never separate.
 <!-- APPEND TASK BATCHES BELOW THIS LINE WITH edit/apply_patch - never rewrite the headers above. -->
 
-- [ ] 1. Types, C constants & catalogEntry update
+- [x] 1. Types, C constants & catalogEntry update
   What to do / Must NOT do:
   - Extend mode union at line 16: `"slideUp" | "flip3d" | "panel" | "scramble" | "depthZoom" | "shimmer" | "jellyWave" | "splitSlide"`
   - Add these new `C` entries (all `as const`):
@@ -86,7 +86,7 @@ Your next move: **Approve** this plan, or I'll run a high-accuracy Momus review 
   QA scenarios: happy = `npx tsc --noEmit` exits 0; failure = verify existing modes still compile
   Commit: Y | feat(title-reveal): add 5 new mode types and C config constants
 
-- [ ] 2. Implement scramble mode
+- [x] 2. Implement scramble mode
   What to do / Must NOT do:
   - In the GSAP `useEffect`, add `m === "scramble"` branch:
     - GSAP: `tl.fromTo(vc, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: C.sc.cd, stagger: C.sc.sg, ease: C.sc.es }, 0)`
@@ -105,7 +105,7 @@ Your next move: **Approve** this plan, or I'll run a high-accuracy Momus review 
   QA scenarios: happy = `npx tsc --noEmit && npx eslint src/TitleReveal.tsx`; failure = empty `mode` prop falls through to default slideUp
   Commit: N (squash with Wave 2 commits)
 
-- [ ] 3. Implement depthZoom mode
+- [x] 3. Implement depthZoom mode
   What to do / Must NOT do:
   - In GSAP `useEffect`, add `m === "depthZoom"` branch:
     - `tl.fromTo(cr.current, { scale: C.dz.scale, filter: \`blur(${C.dz.blur}px)\`, opacity: 0 }, { scale: 1, filter: "blur(0px)", opacity: 1, duration: C.dz.cd, ease: C.dz.es }, 0)`
@@ -120,7 +120,7 @@ Your next move: **Approve** this plan, or I'll run a high-accuracy Momus review 
   QA scenarios: happy = `npx tsc --noEmit`; failure = verify mode="slideUp" still works (regression check)
   Commit: N (squash)
 
-- [ ] 4. Implement shimmer mode
+- [x] 4. Implement shimmer mode
   What to do / Must NOT do:
   - In the render JSX (default path, line 166-182):
     - Apply `background: "linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.9) 50%, transparent 70%)"` on the text div
@@ -139,7 +139,7 @@ Your next move: **Approve** this plan, or I'll run a high-accuracy Momus review 
   QA scenarios: happy = `npx tsc --noEmit`; failure = shimmer without gradient still shows readable text (transparent fallback)
   Commit: N (squash)
 
-- [ ] 5. Implement jellyWave mode
+- [x] 5. Implement jellyWave mode
   What to do / Must NOT do:
   - In GSAP `useEffect`, add `m === "jellyWave"` branch:
     - Per-character squash sequence:
@@ -159,7 +159,7 @@ Your next move: **Approve** this plan, or I'll run a high-accuracy Momus review 
   QA scenarios: happy = `npx tsc --noEmit`; failure = stagger modes still work with jellyWave
   Commit: N (squash)
 
-- [ ] 6. Implement splitSlide mode + Root.tsx registrations
+- [x] 6. Implement splitSlide mode + Root.tsx registrations
   What to do / Must NOT do:
   - **Implementation in TitleReveal.tsx**:
     - JSX: add new render path for `mode === "splitSlide"` (similar to flip3d's special path):
@@ -191,7 +191,7 @@ Your next move: **Approve** this plan, or I'll run a high-accuracy Momus review 
   QA scenarios: happy = `npx tsc --noEmit && npx eslint src/`; failure = mix existing mode="slideUp" with new props (no cross-contamination)
   Commit: Y | feat(title-reveal): implement 5 new title reveal modes and register compositions
 
-- [ ] 7. Update catalog and final lint
+- [x] 7. Update catalog and final lint
   What to do / Must NOT do:
   - Run `npm run update-catalog` (alias: the script that calls `tsx scripts/generate-catalog.ts`)
   - Run `npm run lint` (which runs `eslint src && tsc`)

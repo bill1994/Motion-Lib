@@ -1,12 +1,12 @@
 {
   "schema_version": 2,
-  "active_work_id": "composition-catalog",
+  "active_work_id": "title-reveal-new-modes",
   "works": {
-    "composition-catalog": {
-      "work_id": "composition-catalog",
-      "active_plan": ".omo/plans/composition-catalog.md",
-      "plan_name": "composition-catalog",
-      "session_ids": ["codex:current"],
+    "title-reveal-new-modes": {
+      "work_id": "title-reveal-new-modes",
+      "active_plan": ".omo/plans/title-reveal-new-modes.md",
+      "plan_name": "title-reveal-new-modes",
+      "session_ids": [],
       "status": "active",
       "worktree_path": null
     }

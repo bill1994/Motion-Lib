@@ -135,6 +135,51 @@ export const RemotionRoot: React.FC = () => {
         height={1080}
         calculateMetadata={calculateMetadata}
       />
+      <Composition
+        id="TitleRevealScramble"
+        component={() => <TitleReveal mode="scramble" />}
+        durationInFrames={180}
+        fps={60}
+        width={1920}
+        height={1080}
+        calculateMetadata={calculateMetadata}
+      />
+      <Composition
+        id="TitleRevealDepthZoom"
+        component={() => <TitleReveal mode="depthZoom" />}
+        durationInFrames={180}
+        fps={60}
+        width={1920}
+        height={1080}
+        calculateMetadata={calculateMetadata}
+      />
+      <Composition
+        id="TitleRevealShimmer"
+        component={() => <TitleReveal mode="shimmer" />}
+        durationInFrames={180}
+        fps={60}
+        width={1920}
+        height={1080}
+        calculateMetadata={calculateMetadata}
+      />
+      <Composition
+        id="TitleRevealJellyWave"
+        component={() => <TitleReveal mode="jellyWave" />}
+        durationInFrames={180}
+        fps={60}
+        width={1920}
+        height={1080}
+        calculateMetadata={calculateMetadata}
+      />
+      <Composition
+        id="TitleRevealSplitSlide"
+        component={() => <TitleReveal mode="splitSlide" />}
+        durationInFrames={180}
+        fps={60}
+        width={1920}
+        height={1080}
+        calculateMetadata={calculateMetadata}
+      />
       {/* ================================================================ */}
       {/* Card — 卡片动画                                                   */}
       {/* ================================================================ */}

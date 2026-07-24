@@ -1,7 +1,7 @@
 # 🎪 动画组件目录
 
 > 此文件由 `npm run update-catalog` 自动生成。**请勿手写修改**。
-> 共 17 个 Studio 组合 · 生成时间: 2026-07-24
+> 共 22 个 Studio 组合 · 生成时间: 2026-07-24
 
 ## 🅰️ Typography — 文字动画
 
@@ -15,6 +15,20 @@
 | `fontSize` | number | 48 | 字号（px） |
 | `fontFamily` | string | — | 字体名称 |
 
+### TitleRevealDepthZoom
+
+景深推镜缩放+模糊消散
+
+*(来自 TitleReveal, props: mode=depthZoom)*
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `text` | string | "ZhanWeiFu" | 显示文字 |
+| `subText` | string | "" | 副标题（仅 slideUp 模式） |
+| `staggerMode` | enum | "sequential" | 字符出场顺序（仅 flip3d 模式） |
+| `bgColor` | string | "#00d3ff" | 背景面板颜色（仅 panel 模式） |
+| `textColor` | string | "#ffffff" | 文字颜色 |
+
 ### TitleRevealFlip3d
 
 字符从底部 3D 翻转显现（rotationX:90→0）
@@ -25,6 +39,20 @@
 |------|------|--------|------|
 | `text` | string | "ZhanWeiFu" | 显示文字 |
 | `subText` | string | "" | 副标题（仅 slideUp 模式） |
+| `bgColor` | string | "#00d3ff" | 背景面板颜色（仅 panel 模式） |
+| `textColor` | string | "#ffffff" | 文字颜色 |
+
+### TitleRevealJellyWave
+
+字符果冻弹性形变弹入
+
+*(来自 TitleReveal, props: mode=jellyWave)*
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `text` | string | "ZhanWeiFu" | 显示文字 |
+| `subText` | string | "" | 副标题（仅 slideUp 模式） |
+| `staggerMode` | enum | "sequential" | 字符出场顺序（仅 flip3d 模式） |
 | `bgColor` | string | "#00d3ff" | 背景面板颜色（仅 panel 模式） |
 | `textColor` | string | "#ffffff" | 文字颜色 |
 
@@ -40,11 +68,53 @@
 | `subText` | string | "" | 副标题（仅 slideUp 模式） |
 | `staggerMode` | enum | "sequential" | 字符出场顺序（仅 flip3d 模式） |
 
+### TitleRevealScramble
+
+字符黑客解密乱码→逐步稳定
+
+*(来自 TitleReveal, props: mode=scramble)*
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `text` | string | "ZhanWeiFu" | 显示文字 |
+| `subText` | string | "" | 副标题（仅 slideUp 模式） |
+| `staggerMode` | enum | "sequential" | 字符出场顺序（仅 flip3d 模式） |
+| `bgColor` | string | "#00d3ff" | 背景面板颜色（仅 panel 模式） |
+| `textColor` | string | "#ffffff" | 文字颜色 |
+
+### TitleRevealShimmer
+
+流光扫影渐变揭示（Apple风格）
+
+*(来自 TitleReveal, props: mode=shimmer)*
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `text` | string | "ZhanWeiFu" | 显示文字 |
+| `subText` | string | "" | 副标题（仅 slideUp 模式） |
+| `staggerMode` | enum | "sequential" | 字符出场顺序（仅 flip3d 模式） |
+| `bgColor` | string | "#00d3ff" | 背景面板颜色（仅 panel 模式） |
+| `textColor` | string | "#ffffff" | 文字颜色 |
+
 ### TitleRevealSlideUp
 
 字符逐字弹性弹入（y:100%→0, back.out）
 
 *(来自 TitleReveal, props: mode=slideUp)*
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `text` | string | "ZhanWeiFu" | 显示文字 |
+| `subText` | string | "" | 副标题（仅 slideUp 模式） |
+| `staggerMode` | enum | "sequential" | 字符出场顺序（仅 flip3d 模式） |
+| `bgColor` | string | "#00d3ff" | 背景面板颜色（仅 panel 模式） |
+| `textColor` | string | "#ffffff" | 文字颜色 |
+
+### TitleRevealSplitSlide
+
+字符上下对切错位滑入拼接
+
+*(来自 TitleReveal, props: mode=splitSlide)*
 
 | 参数 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
@@ -190,4 +260,4 @@ SVG 多边形旋转缩放转场
 *(固定效果，无配置参数)*
 
 ---
-> 共 17 个组件
+> 共 22 个组件
