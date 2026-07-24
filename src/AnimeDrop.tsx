@@ -1,5 +1,5 @@
 import React from "react";
-import { useCurrentFrame, useVideoConfig, interpolate, spring, Easing } from "remotion";
+import { useCurrentFrame, useVideoConfig, interpolate, Easing } from "remotion";
 
 // ================================================================
 // AnimeDrop Props —— 全部关键节律参数均可从外部微调
@@ -27,12 +27,6 @@ interface AnimeDropProps {
   fallFrames?: number;
 
   // ---- 阶段三：克制物理晃动 ----
-  /** 弹簧刚度（越大越硬），默认 250 */
-  springStiffness?: number;
-  /** 弹簧阻尼（越大衰减越快），默认 20 */
-  springDamping?: number;
-  /** 弹簧质量，默认 0.3 */
-  springMass?: number;
   /**
    * 最大回弹角度占初始倾斜幅度的比例
    * 例：initialTiltAngle=-20, maxBounceAngleRatio=0.2 → 最大回弹 ±4°
@@ -44,6 +38,10 @@ interface AnimeDropProps {
    * 范围建议 0.03-0.05，默认 0.04（4%）
    */
   maxSquashRatio?: number;
+  /** 晃动频率（Hz），默认 12 — 越大晃得越快 */
+  frequency?: number;
+  /** 衰减系数（阻尼），默认 8 — 越大停得越快 */
+  decay?: number;
 
   // ---- 动态模糊 ----
   /** 运动模糊强度系数（velocity × factor = 模糊像素），默认 45 */
@@ -69,11 +67,10 @@ export const AnimeDrop: React.FC<AnimeDropProps> = ({
   initialTiltAngle = -20,
   burstFrames = 15,
   fallFrames = 20,
-  springStiffness = 250,
-  springDamping = 20,
-  springMass = 0.3,
   maxBounceAngleRatio = 0.2,
   maxSquashRatio = 0.04,
+  frequency = 12,
+  decay = 8,
   blurFactor = 45,
 }) => {
   const frame = useCurrentFrame();
@@ -169,68 +166,48 @@ export const AnimeDrop: React.FC<AnimeDropProps> = ({
   }
 
   // ================================================================
-  // 阶段三：克制物理晃动 (Restrained Jiggle)
+  // 阶段三：克制物理晃动 (Damped Sine Wave)
   //
-  // 核心克制逻辑：
+  // 用阻尼正弦波替代 Remotion spring，因为 sin(0)=0 数学级保证
+  // FALL_END 边界零跳变，消除落地瞬间的断层感。
   //
-  // 1. **角度克制**：
-  //    最大回弹角度 = |initialTiltAngle| × maxBounceAngleRatio
-  //    例：20° × 0.2 = 4°，即无论弹簧如何 overshoot，
-  //    角度浮动被锁定在初始倾斜幅度的 20% 以内。
+  // 参数：
+  //   frequency — 晃动频率（Hz），默认 12
+  //   decay     — 衰减系数（阻尼），默认 8
   //
-  // 2. **形变克制**：
-  //    maxSquashRatio = 0.04 → 垂直压缩不超过主体尺寸的 4%
-  //    即 scaleY ∈ [0.96, 1.04]，极其微妙的果冻质感，拒绝浮夸。
+  // 行为：
+  //   — 角度晃动：maxBounceAngle × exp(-decay·t) × sin(frequency·t)
+  //   — 垂直压缩：仅在 sin 正向半周期压缩，反向归零
+  //   — 体积守恒：scaleX = 1 / scaleY
   //
-  // 3. **弹簧配置**：
-  //    stiffness ≥ 200 + damping ≥ 18 → 高刚度 + 高阻尼 =
-  //    "沉稳、有分量、迅速卸力" 的高级物理质感
-  //    — stiffness 250：触地瞬间极速反馈，无延迟
-  //    — damping 20：1-2 个周期内完成衰减，拒绝无休止晃动
-  //    — mass 0.3：轻质惯性，进一步提升响应速度
-  //
-  // Spring 从 0→1（0=撞击瞬间，1=恢复静止）
-  // 通过 extrapolateRight: "extend" 允许 Spring 的 overshoot
-  // 产生往复晃动（角度在 ±maxBounceAngle 之间交替衰减）
+  // t=0（落地瞬间）rotation=0, scaleY=1 → 与阶段二 FIFO 连续
   // ================================================================
   let jiggleRotation = 0;
   let jiggleScaleX = 1;
   let jiggleScaleY = 1;
 
   if (frame >= FALL_END) {
-    const jiggleSpring = spring({
-      frame: frame - FALL_END,
-      fps,
-      config: {
-        stiffness: springStiffness,
-        damping: springDamping,
-        mass: springMass,
-      },
-    });
+    const t = (frame - FALL_END) / fps;
+    const signal = Math.exp(-decay * t) * Math.sin(frequency * t);
 
-    // ---- 角度晃动 ----
-    // spring=0 → maxBounceAngle（正向 bounce，延续倾倒方向的动量）
-    // spring=1 → 0（静止）
-    // spring>1 → 负向（overshoot 回弹，往复交替）
-    const maxBounceAngle = Math.abs(initialTiltAngle) * maxBounceAngleRatio;
-    jiggleRotation = interpolate(jiggleSpring, [0, 1], [maxBounceAngle, 0], {
-      extrapolateRight: "extend",
-      extrapolateLeft: "clamp",
-    });
+    // 死区阈值：信号幅度 < 0.01 时直接锁死，消除残余微抖
+    // 对应旋转角 < 0.04°、形变 < 0.04%，肉眼不可感知
+    if (Math.abs(signal) < 0.01) {
+      jiggleRotation = 0;
+      jiggleScaleX = 1;
+      jiggleScaleY = 1;
+    } else {
+      // 角度晃动：sin(0)=0 保证落地瞬间零跳变
+      const maxBounceAngle = Math.abs(initialTiltAngle) * maxBounceAngleRatio;
+      jiggleRotation = maxBounceAngle * signal;
 
-    // ---- 垂直压缩（Squash）----
-    // spring=0 → 压缩至 1-maxSquashRatio（触地瞬间被"拍扁"）
-    // spring=1 → 1（恢复）
-    // spring>1 → 轻微拉伸（overshoot 回弹）
-    // 形变幅度严格控制在 3-5%
-    jiggleScaleY = interpolate(jiggleSpring, [0, 1], [1 - maxSquashRatio, 1], {
-      extrapolateRight: "extend",
-      extrapolateLeft: "clamp",
-    });
+      // 垂直压缩（Squash）：仅在正向周期压缩（sin 为正时）
+      const currentSquash = maxSquashRatio * Math.max(0, signal);
+      jiggleScaleY = 1 - currentSquash;
 
-    // ---- 体积守恒 (Area Preservation) ----
-    // scaleX × scaleY ≈ 1：压扁时横向扩张，拉伸时横向收缩
-    jiggleScaleX = 1 / jiggleScaleY;
+      // 体积守恒 (Area Preservation)
+      jiggleScaleX = 1 / jiggleScaleY;
+    }
   }
 
   // ================================================================
@@ -304,10 +281,12 @@ export const AnimeDrop: React.FC<AnimeDropProps> = ({
 export const catalogEntry = {
   name: 'AnimeDrop',
   category: 'entrance',
-  description: '动漫式爆发弹入 + 重力下落 + 弹簧归位',
+  description: '动漫式爆发弹入 + 重力倒下 + 阻尼正弦波归位',
   params: {
     targetSize: { type: 'number', desc: '主体正方形边长（px），默认画面宽度 30%' },
     initialTiltAngle: { type: 'number', default: '-20', desc: '初始逆时针倾斜角度（度）' },
+    frequency: { type: 'number', default: '12', desc: '晃动频率（Hz），越大晃得越快' },
+    decay: { type: 'number', default: '8', desc: '衰减系数（阻尼），越大停得越快' },
     seed: { type: 'string', desc: '随机种子，用于确定性动画变体' },
   },
 };

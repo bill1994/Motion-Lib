@@ -27,7 +27,8 @@
 | `subText` | string | "" | 副标题（仅 slideUp 模式） |
 | `staggerMode` | enum | "sequential" | 字符出场顺序（仅 flip3d 模式） |
 | `bgColor` | string | "#00d3ff" | 背景面板颜色（仅 panel 模式） |
-| `textColor` | string | "#ffffff" | 文字颜色 |
+| `textColor` | string | "#1D1B20" | 文字颜色 |
+| `textShadow` | string | "0 2px 8px rgba(0,0,0,0.25)" | 文字阴影 (CSS text-shadow) |
 
 ### TitleRevealFlip3d
 
@@ -40,7 +41,8 @@
 | `text` | string | "ZhanWeiFu" | 显示文字 |
 | `subText` | string | "" | 副标题（仅 slideUp 模式） |
 | `bgColor` | string | "#00d3ff" | 背景面板颜色（仅 panel 模式） |
-| `textColor` | string | "#ffffff" | 文字颜色 |
+| `textColor` | string | "#1D1B20" | 文字颜色 |
+| `textShadow` | string | "0 2px 8px rgba(0,0,0,0.25)" | 文字阴影 (CSS text-shadow) |
 
 ### TitleRevealJellyWave
 
@@ -54,7 +56,8 @@
 | `subText` | string | "" | 副标题（仅 slideUp 模式） |
 | `staggerMode` | enum | "sequential" | 字符出场顺序（仅 flip3d 模式） |
 | `bgColor` | string | "#00d3ff" | 背景面板颜色（仅 panel 模式） |
-| `textColor` | string | "#ffffff" | 文字颜色 |
+| `textColor` | string | "#1D1B20" | 文字颜色 |
+| `textShadow` | string | "0 2px 8px rgba(0,0,0,0.25)" | 文字阴影 (CSS text-shadow) |
 
 ### TitleRevealPanel
 
@@ -67,6 +70,7 @@
 | `text` | string | "ZhanWeiFu" | 显示文字 |
 | `subText` | string | "" | 副标题（仅 slideUp 模式） |
 | `staggerMode` | enum | "sequential" | 字符出场顺序（仅 flip3d 模式） |
+| `textShadow` | string | "0 2px 8px rgba(0,0,0,0.25)" | 文字阴影 (CSS text-shadow) |
 
 ### TitleRevealScramble
 
@@ -80,7 +84,8 @@
 | `subText` | string | "" | 副标题（仅 slideUp 模式） |
 | `staggerMode` | enum | "sequential" | 字符出场顺序（仅 flip3d 模式） |
 | `bgColor` | string | "#00d3ff" | 背景面板颜色（仅 panel 模式） |
-| `textColor` | string | "#ffffff" | 文字颜色 |
+| `textColor` | string | "#1D1B20" | 文字颜色 |
+| `textShadow` | string | "0 2px 8px rgba(0,0,0,0.25)" | 文字阴影 (CSS text-shadow) |
 
 ### TitleRevealShimmer
 
@@ -94,7 +99,8 @@
 | `subText` | string | "" | 副标题（仅 slideUp 模式） |
 | `staggerMode` | enum | "sequential" | 字符出场顺序（仅 flip3d 模式） |
 | `bgColor` | string | "#00d3ff" | 背景面板颜色（仅 panel 模式） |
-| `textColor` | string | "#ffffff" | 文字颜色 |
+| `textColor` | string | "#1D1B20" | 文字颜色 |
+| `textShadow` | string | "0 2px 8px rgba(0,0,0,0.25)" | 文字阴影 (CSS text-shadow) |
 
 ### TitleRevealSlideUp
 
@@ -108,7 +114,8 @@
 | `subText` | string | "" | 副标题（仅 slideUp 模式） |
 | `staggerMode` | enum | "sequential" | 字符出场顺序（仅 flip3d 模式） |
 | `bgColor` | string | "#00d3ff" | 背景面板颜色（仅 panel 模式） |
-| `textColor` | string | "#ffffff" | 文字颜色 |
+| `textColor` | string | "#1D1B20" | 文字颜色 |
+| `textShadow` | string | "0 2px 8px rgba(0,0,0,0.25)" | 文字阴影 (CSS text-shadow) |
 
 ### TitleRevealSplitSlide
 
@@ -122,7 +129,8 @@
 | `subText` | string | "" | 副标题（仅 slideUp 模式） |
 | `staggerMode` | enum | "sequential" | 字符出场顺序（仅 flip3d 模式） |
 | `bgColor` | string | "#00d3ff" | 背景面板颜色（仅 panel 模式） |
-| `textColor` | string | "#ffffff" | 文字颜色 |
+| `textColor` | string | "#1D1B20" | 文字颜色 |
+| `textShadow` | string | "0 2px 8px rgba(0,0,0,0.25)" | 文字阴影 (CSS text-shadow) |
 
 ### WordReveal
 
@@ -153,12 +161,14 @@
 
 ### AnimeDrop
 
-动漫式爆发弹入 + 重力下落 + 弹簧归位
+动漫式爆发弹入 + 重力倒下 + 阻尼正弦波归位
 
 | 参数 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
 | `targetSize` | number | — | 主体正方形边长（px），默认画面宽度 30% |
 | `initialTiltAngle` | number | -20 | 初始逆时针倾斜角度（度） |
+| `frequency` | number | 12 | 晃动频率（Hz），越大晃得越快 |
+| `decay` | number | 8 | 衰减系数（阻尼），越大停得越快 |
 | `seed` | string | — | 随机种子，用于确定性动画变体 |
 
 ### CurtainReveal

@@ -1,0 +1,18 @@
+=== Verification Evidence: AnimeDrop phase 3 jiggle fix ===
+
+1. npm run lint output:
+   > motion-lib@1.0.0 lint
+   > eslint src && tsc
+   (no errors)
+
+2. spring removed from import:
+   $ grep "^import.*spring" src/AnimeDrop.tsx
+   → no match (spring not in import — confirmed)
+
+3. frequency in interface:
+   $ grep "frequency" src/AnimeDrop.tsx
+   frequency?: number;
+   frequency = 12,
+   //   frequency — 晃动频率（Hz），默认 12
+   //   — 角度晃动：maxBounceAngle × exp(-decay·t) × sin(frequency·t)
+   const signal = Math.exp(-decay * t) * Math.sin(frequency * t);
