@@ -8,6 +8,7 @@
   "dependencies": {
     "@react-three/fiber": "^9.6.1",
     "@remotion/cli": "4.0.479",
+    "@remotion/motion-blur": "4.0.479",
     "@remotion/tailwind-v4": "4.0.479",
     "@remotion/three": "4.0.479",
     "@types/three": "^0.184.1",
