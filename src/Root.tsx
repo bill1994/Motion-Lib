@@ -79,7 +79,7 @@ export const RemotionRoot: React.FC = () => {
       {/* Typography — 文字动画                                               */}
       {/* ================================================================ */}
       <Composition
-        id="TextIntro"
+        id="TitleRevealSlideUp"
         component={() => <TitleReveal mode="slideUp" />}
         durationInFrames={180}
         fps={60}
@@ -109,7 +109,7 @@ export const RemotionRoot: React.FC = () => {
         }}
       />
       <Composition
-        id="MediaTitle"
+        id="TitleRevealPanel"
         component={() => <TitleReveal mode="panel" text="media" />}
         durationInFrames={180}
         fps={60}
@@ -127,7 +127,7 @@ export const RemotionRoot: React.FC = () => {
         calculateMetadata={calculateMetadata}
       />
       <Composition
-        id="CharReveal"
+        id="TitleRevealFlip3d"
         component={() => <TitleReveal mode="flip3d" text="ZHanWeiFU" />}
         durationInFrames={180}
         fps={60}
@@ -286,7 +286,7 @@ export const RemotionRoot: React.FC = () => {
       {/* Character — 角色动画                                              */}
       {/* ================================================================ */}
       <Composition
-        id="ClawdDrop"
+        id="ClawdSceneDrop"
         component={() => <ClawdScene routine="drop" />}
         durationInFrames={180}
         fps={60}
@@ -295,7 +295,7 @@ export const RemotionRoot: React.FC = () => {
         calculateMetadata={calculateMetadata}
       />
       <Composition
-        id="ClawdAction"
+        id="ClawdSceneAction"
         component={() => <ClawdScene routine="action" />}
         durationInFrames={180}
         fps={60}

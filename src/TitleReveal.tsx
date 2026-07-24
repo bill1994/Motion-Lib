@@ -185,6 +185,23 @@ export const catalogEntry = {
   name: "TitleReveal",
   category: "typography" as const,
   description: "统一文字揭示动画 — 支持 slideUp / flip3d / panel 三种模式",
+  compositions: [
+    {
+      id: "TitleRevealSlideUp",
+      props: { mode: "slideUp" },
+      desc: "字符逐字弹性弹入（y:100%→0, back.out）",
+    },
+    {
+      id: "TitleRevealPanel",
+      props: { mode: "panel", bgColor: "#00d3ff", textColor: "#ffffff" },
+      desc: "背景面板从左展开 + 字符从底部滑入",
+    },
+    {
+      id: "TitleRevealFlip3d",
+      props: { mode: "flip3d", staggerMode: "sequential" },
+      desc: "字符从底部 3D 翻转显现（rotationX:90→0）",
+    },
+  ],
   params: {
     text: { type: "string", default: '"ZhanWeiFu"', desc: "显示文字" },
     subText: { type: "string", default: '""', desc: "副标题（仅 slideUp 模式）" },

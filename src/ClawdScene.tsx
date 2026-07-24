@@ -388,6 +388,18 @@ export const catalogEntry = {
   category: "character" as const,
   description:
     "像素 Clawd 角色动画 — 支持 drop（滑入爱心）和 action（跑出屏幕）两种模式",
+  compositions: [
+    {
+      id: "ClawdSceneDrop",
+      props: { routine: "drop" },
+      desc: "像素 Clawd 角色从左侧滑入 + 弹跳 + 表情互动 + 爱心粒子系统",
+    },
+    {
+      id: "ClawdSceneAction",
+      props: { routine: "action" },
+      desc: "像素 Clawd 三段式动作序列 — 弹跳入场 → 空闲摇摆 → 旋转跑出屏幕",
+    },
+  ],
   params: {
     routine: {
       type: "enum",
