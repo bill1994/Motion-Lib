@@ -32,7 +32,7 @@ interface DominoCascadeProps {
 
 const ENTRY_DURATION = 24;
 const SETTLE_DURATION = 12;
-const DOMINO_DURATION = 24;
+const DOMINO_DURATION = 30;
 
 function darken(hex: string, amount: number): string {
   const num = parseInt(hex.replace("#", ""), 16);
@@ -52,16 +52,13 @@ function lighten(hex: string, amount: number): string {
 
 export const DominoCascade: React.FC<DominoCascadeProps> = ({
   count = 4,
-  blockWidth = 20,
+  blockWidth = 75,
   blockHeight = 150,
   blockDepth = 100,
   entryStagger = 12,
-  dominoStagger = 3,
-  yRotationRange = [3, 8],
+  yRotationRange = [-4, 8],
   xOffset = 960,
   yOffset = 400,
-  baseColor = "#CBC0D3",
-  accentColor = "#4E4D5C",
   texts,
   children,
 }) => {
@@ -70,15 +67,18 @@ export const DominoCascade: React.FC<DominoCascadeProps> = ({
   const entryEnd = count * entryStagger + ENTRY_DURATION;
   const dominoStart = entryEnd + SETTLE_DURATION;
 
-  // X gap = blockHeight so falling block touches next at 90° rotation
-  const xGap = blockHeight;
+  // Spacing: triggers at ~60°, maxAngle=70°, overlap ~10px
+  const xGap = blockHeight * 0.87 + blockWidth * 0.5;
+  const maxDominoAngle = 70;
 
-  const frontColor = baseColor;
-  const backColor = darken(accentColor, 30);
-  const topColor = lighten(baseColor, 40);
-  const bottomColor = darken(accentColor, 50);
-  const leftColor = accentColor;
-  const rightColor = lighten(accentColor, 20);
+  const BLOCK_COLORS = [
+    "#E57373", "#F06292", "#BA68C8", "#9575CD",
+    "#7986CB", "#64B5F6", "#4FC3F7", "#4DD0E1",
+    "#4DB6AC", "#81C784", "#AED581", "#DCE775",
+    "#FFF176", "#FFB74D", "#FF8A65", "#FF5252",
+  ];
+
+  const dynamicStagger = 6; // simple fixed stagger, 6 frames = 0.1s
 
   const getYRotation = (i: number) => {
     const [min, max] = yRotationRange;
@@ -111,25 +111,30 @@ export const DominoCascade: React.FC<DominoCascadeProps> = ({
       extrapolateRight: "clamp",
     });
 
-    const yRot = entryProgress * getYRotation(i);
+    const yRot = getYRotation(i); // Entry should already be rotated
+
+    const blockColor = BLOCK_COLORS[i % BLOCK_COLORS.length];
+    const blockFrontColor = blockColor;
+    const blockBackColor = darken(blockColor, 30);
+    const blockTopColor = lighten(blockColor, 30);
+    const blockBottomColor = darken(blockColor, 40);
+    const blockLeftColor = blockColor;
+    const blockRightColor = lighten(blockColor, 15);
 
     let dominoRotation = 0;
-    const dominoLocal = frame - dominoStart - i * dominoStagger;
+    const dominoLocal = frame - dominoStart - i * dynamicStagger;
     if (dominoLocal >= 0 && dominoLocal < DOMINO_DURATION) {
       dominoRotation = interpolate(
         dominoLocal,
         [0, DOMINO_DURATION],
-        [0, 85],
+        [0, maxDominoAngle],
         { easing: Easing.in(Easing.quad), extrapolateRight: "clamp" }
       );
     } else if (dominoLocal >= DOMINO_DURATION) {
-      dominoRotation = 85;
+      dominoRotation = maxDominoAngle;
     }
 
-    let blockOpacity = entryOpacity;
-    if (dominoLocal >= DOMINO_DURATION) {
-      blockOpacity = entryOpacity * 0.7;
-    }
+    const blockOpacity = entryOpacity;
 
     const blockLeft = blockX - blockWidth / 2;
     const blockTop = blockBottom - blockHeight;
@@ -143,12 +148,14 @@ export const DominoCascade: React.FC<DominoCascadeProps> = ({
     blocks.push(
       <div
         key={i}
+        data-block-name={`domino-${i}`}
         style={{
           position: "absolute",
           left: blockLeft,
           top: blockTop,
           width: blockWidth,
           height: blockHeight,
+          transformStyle: "preserve-3d",
           transformOrigin: "center bottom",
           transform,
           willChange: "transform",
@@ -161,7 +168,7 @@ export const DominoCascade: React.FC<DominoCascadeProps> = ({
             inset: 0,
             width: blockWidth,
             height: blockHeight,
-            backgroundColor: frontColor,
+            backgroundColor: blockFrontColor,
             transform: `translateZ(${blockDepth / 2}px)`,
             display: "flex",
             alignItems: "center",
@@ -193,7 +200,7 @@ export const DominoCascade: React.FC<DominoCascadeProps> = ({
             inset: 0,
             width: blockWidth,
             height: blockHeight,
-            backgroundColor: backColor,
+            backgroundColor: blockBackColor,
             transform: `rotateY(180deg) translateZ(${blockDepth / 2}px)`,
           }}
         />
@@ -201,10 +208,11 @@ export const DominoCascade: React.FC<DominoCascadeProps> = ({
         <div
           style={{
             position: "absolute",
-            inset: 0,
+            left: (blockWidth - blockDepth) / 2,
+            top: 0,
             width: blockDepth,
             height: blockHeight,
-            backgroundColor: rightColor,
+            backgroundColor: blockRightColor,
             transform: `rotateY(90deg) translateZ(${blockWidth / 2}px)`,
           }}
         />
@@ -212,10 +220,11 @@ export const DominoCascade: React.FC<DominoCascadeProps> = ({
         <div
           style={{
             position: "absolute",
-            inset: 0,
+            left: (blockWidth - blockDepth) / 2,
+            top: 0,
             width: blockDepth,
             height: blockHeight,
-            backgroundColor: leftColor,
+            backgroundColor: blockLeftColor,
             transform: `rotateY(-90deg) translateZ(${blockWidth / 2}px)`,
           }}
         />
@@ -223,10 +232,11 @@ export const DominoCascade: React.FC<DominoCascadeProps> = ({
         <div
           style={{
             position: "absolute",
-            inset: 0,
+            left: 0,
+            top: (blockHeight - blockDepth) / 2,
             width: blockWidth,
             height: blockDepth,
-            backgroundColor: topColor,
+            backgroundColor: blockTopColor,
             transform: `rotateX(-90deg) translateZ(${blockHeight / 2}px)`,
           }}
         />
@@ -234,10 +244,11 @@ export const DominoCascade: React.FC<DominoCascadeProps> = ({
         <div
           style={{
             position: "absolute",
-            inset: 0,
+            left: 0,
+            top: (blockHeight - blockDepth) / 2,
             width: blockWidth,
             height: blockDepth,
-            backgroundColor: bottomColor,
+            backgroundColor: blockBottomColor,
             transform: `rotateX(90deg) translateZ(${blockHeight / 2}px)`,
           }}
         />
@@ -258,9 +269,9 @@ export const DominoCascade: React.FC<DominoCascadeProps> = ({
         position: "absolute",
         inset: 0,
         backgroundColor: "transparent",
-        perspective: "1500px",
+        perspective: "600px",
         transformStyle: "preserve-3d",
-        transform: `rotateY(${containerRotateY}deg)`,
+        transform: `rotateY(${containerRotateY}deg) rotateX(-8deg)`,
         transformOrigin: "center center",
         willChange: "transform",
       }}
