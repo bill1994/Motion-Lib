@@ -15,6 +15,7 @@ import { WordReveal } from "./WordReveal";
 import { GlassCard } from "./GlassCard/GlassCard";
 import { SceneTransition } from "./SceneTransition";
 import { DominoCascade } from "./DominoCascade";
+import { BurstReveal } from "./BurstReveal";
 
 /**
  * 为输出 ProRes 4444 透明视频预置默认编码参数
@@ -280,6 +281,15 @@ export const RemotionRoot: React.FC = () => {
         id="DominoCascade"
         component={DominoCascade as unknown as React.FC<Record<string, unknown>>}
         durationInFrames={240}
+        fps={60}
+        width={1920}
+        height={1080}
+        calculateMetadata={calculateMetadata}
+      />
+      <Composition
+        id="BurstReveal"
+        component={BurstReveal as unknown as React.FC<Record<string, unknown>>}
+        durationInFrames={120}
         fps={60}
         width={1920}
         height={1080}

@@ -1,7 +1,7 @@
 # 🎪 动画组件目录
 
 > 此文件由 `npm run update-catalog` 自动生成。**请勿手写修改**。
-> 共 22 个 Studio 组合 · 生成时间: 2026-07-24
+> 共 23 个 Studio 组合 · 生成时间: 2026-07-24
 
 ## 🅰️ Typography — 文字动画
 
@@ -171,6 +171,19 @@
 | `decay` | number | 8 | 衰减系数（阻尼），越大停得越快 |
 | `seed` | string | — | 随机种子，用于确定性动画变体 |
 
+### BurstReveal
+
+物体高频收缩抖动 → 爆发圆形展开 → 内容交错淡入
+
+| 参数 | 类型 | 默认值 | 说明 |
+|------|------|--------|------|
+| `seed` | string | "default" | 随机种子 |
+| `squeezeDuration` | number | 30 | 蓄力阶段帧数 |
+| `burstDuration` | number | 36 | 爆发阶段帧数 |
+| `revealDuration` | number | 54 | 淡入阶段帧数 |
+| `size` | number | 80 | 初始物体尺寸 px |
+| `color` | string | "#CBC0D3" | 物体背景色 |
+
 ### CurtainReveal
 
 竖向帘幕柱 reveal / cover / cycle
@@ -270,4 +283,4 @@ SVG 多边形旋转缩放转场
 *(固定效果，无配置参数)*
 
 ---
-> 共 22 个组件
+> 共 23 个组件
