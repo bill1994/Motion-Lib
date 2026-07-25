@@ -82,7 +82,7 @@ const GlowEdge: React.FC<GlowEdgeProps> = ({
   frame,
   borderRadius = 16,
   color = '#CBC0D3',
-  borderWidth = 2,
+  borderWidth = 4,
   beamLength = 90,
   glowBlur: glowBlurProp = 20,
   blurAmount,
@@ -98,6 +98,8 @@ const GlowEdge: React.FC<GlowEdgeProps> = ({
   const beamGrad = getBeamGradient(colorVariant, angle, beamLength, color);
   const maskInset = borderWidth;
   const maskBorderRadius = borderRadius + maskInset;
+  const beamOpacity = Math.min(1, intensity);
+  const sharedMask = getBorderMask(borderWidth);
 
   return (
     <div
@@ -105,10 +107,11 @@ const GlowEdge: React.FC<GlowEdgeProps> = ({
         position: 'absolute' as const,
         inset: 0,
         pointerEvents: 'none' as const,
-        opacity: Math.min(1, intensity),
+        zIndex: 5,
+        opacity: beamOpacity,
       }}
     >
-      {/* Layer 1: Glow - blurred halo around the beam */}
+      {/* Layer 1: Blurred glow halo around the beam */}
       <div
         style={{
           position: 'absolute' as const,
@@ -117,19 +120,21 @@ const GlowEdge: React.FC<GlowEdgeProps> = ({
           background: beamGrad,
           filter: `blur(${glowBlur}px)`,
           WebkitFilter: `blur(${glowBlur}px)`,
-          opacity: 0.6,
-          ...getBorderMask(borderWidth),
+          mixBlendMode: 'plus-lighter' as const,
+          opacity: 0.7,
+          ...sharedMask,
         }}
       />
 
-      {/* Layer 2: Core beam - sharp bright border arc */}
+      {/* Layer 2: Core sharp beam */}
       <div
         style={{
           position: 'absolute' as const,
           inset: -maskInset,
           borderRadius: maskBorderRadius,
           background: beamGrad,
-          ...getBorderMask(borderWidth),
+          mixBlendMode: 'plus-lighter' as const,
+          ...sharedMask,
         }}
       />
     </div>
