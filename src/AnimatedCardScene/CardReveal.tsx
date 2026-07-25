@@ -2,6 +2,7 @@ import React from 'react';
 import { interpolate, spring, Easing } from 'remotion';
 import type { MotionConfig } from './config';
 import type { PhaseInfo, EntranceStyle } from './types';
+import type { GlowColorVariant } from './colorPresets';
 import GlowEdge from './GlowEdge';
 
 interface CardRevealProps {
@@ -25,6 +26,8 @@ interface CardRevealProps {
   glowEdgeRotationDuration?: number;
   glowEdgeIllumEnabled?: boolean;
   glowEdgeIllumIntensity?: number;
+  glowEdgeColorVariant?: GlowColorVariant;
+  glowEdgeBlurAmount?: number;
 }
 
 function computePhase(frame: number, config: MotionConfig): PhaseInfo {
@@ -60,6 +63,8 @@ const CardReveal: React.FC<CardRevealProps> = ({
   glowEdgeRotationDuration = 120,
   glowEdgeIllumEnabled = true,
   glowEdgeIllumIntensity = 0.6,
+  glowEdgeColorVariant = 'mono',
+  glowEdgeBlurAmount = 10,
 }) => {
   const resolvedCardHeight = cardHeight ?? 280;
   const centerX = (width - cardWidth) / 2;
@@ -78,6 +83,8 @@ const CardReveal: React.FC<CardRevealProps> = ({
       intensity={glowEdgeIntensity}
       rotationDuration={glowEdgeRotationDuration}
       enabled={glowEdgeEnabled}
+      colorVariant={glowEdgeColorVariant}
+      blurAmount={glowEdgeBlurAmount}
     />
   );
 

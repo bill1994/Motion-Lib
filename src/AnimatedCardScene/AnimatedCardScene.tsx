@@ -5,6 +5,7 @@ import type { PartialMotionConfig } from './config';
 import { mergeConfig } from './config';
 import { createParticles } from './particleUtils';
 import { ParticleCanvas } from './ParticleCanvas';
+import type { GlowColorVariant } from './colorPresets';
 import CardReveal from './CardReveal';
 import DefaultCardContent from './DefaultCardContent';
 
@@ -27,6 +28,8 @@ export interface AnimatedCardSceneProps extends Omit<CardContentProps, 'title'> 
   glowEdgeRotationDuration?: number;
   glowEdgeIllumEnabled?: boolean;
   glowEdgeIllumIntensity?: number;
+  glowEdgeColorVariant?: GlowColorVariant;
+  glowEdgeBlurAmount?: number;
 }
 
 export const AnimatedCardScene: React.FC<AnimatedCardSceneProps> = ({
@@ -52,6 +55,8 @@ export const AnimatedCardScene: React.FC<AnimatedCardSceneProps> = ({
   glowEdgeRotationDuration = 120,
   glowEdgeIllumEnabled = true,
   glowEdgeIllumIntensity = 0.6,
+  glowEdgeColorVariant = 'mono',
+  glowEdgeBlurAmount = 10,
 }) => {
   const frame = useCurrentFrame();
   const { width, height, fps } = useVideoConfig();
@@ -118,7 +123,9 @@ export const AnimatedCardScene: React.FC<AnimatedCardSceneProps> = ({
            glowEdgeRotationDuration={glowEdgeRotationDuration}
            glowEdgeIllumEnabled={glowEdgeIllumEnabled}
            glowEdgeIllumIntensity={glowEdgeIllumIntensity}
-        >
+           glowEdgeColorVariant={glowEdgeColorVariant}
+           glowEdgeBlurAmount={glowEdgeBlurAmount}
+         >
           {children ?? (
             <DefaultCardContent
               title={title ?? ''}
