@@ -1,5 +1,5 @@
 import React from 'react';
-import { type GlowColorVariant, getGradientString } from './colorPresets';
+import { type GlowColorVariant } from './colorPresets';
 
 export interface GlowEdgeProps {
   width: number;
@@ -7,69 +7,131 @@ export interface GlowEdgeProps {
   frame: number;
   borderRadius?: number;
   color?: string;
+  borderWidth?: number;
+  beamLength?: number;
+  glowBlur?: number;
+  blurAmount?: number;
   intensity?: number;
   rotationDuration?: number;
   enabled?: boolean;
   colorVariant?: GlowColorVariant;
-  blurAmount?: number;
+}
+
+// Color palettes for gradient beam arcs (simplified, 4-5 colors per variant)
+const BEAM_PALETTES: Record<string, string[]> = {
+  mono: [],
+  rainbow: ['#ff3264', '#cc44ff', '#288cff', '#32c850', '#ffcc00'],
+  ocean: ['#6446ff', '#288cff', '#1db9aa', '#32c850'],
+  sunset: ['#ff3264', '#ff6600', '#ffcc00', '#ff6600'],
+};
+
+/**
+ * Generate a conic-gradient string that creates a colored beam arc.
+ * The beam arc starts at `angle` and spans `beamLength` degrees.
+ * Colors from the palette are distributed evenly within the arc.
+ */
+function getBeamGradient(
+  variant: GlowColorVariant,
+  angle: number,
+  beamLength: number,
+  color: string,
+): string {
+  if (variant === 'mono' || variant === 'custom') {
+    // Single-color beam
+    return `conic-gradient(from ${angle}deg at 50% 50%, transparent 0deg, ${color} 5deg, ${color} ${beamLength}deg, transparent ${beamLength + 10}deg)`;
+  }
+
+  const palette = BEAM_PALETTES[variant] || BEAM_PALETTES.rainbow;
+  const numColors = palette.length;
+  if (numColors === 0) {
+    return `conic-gradient(from ${angle}deg at 50% 50%, transparent 0deg, ${color} 5deg, ${color} ${beamLength}deg, transparent ${beamLength + 10}deg)`;
+  }
+
+  // Distribute colors evenly within the beam arc
+  const segmentSize = beamLength / numColors;
+  const stops: string[] = [];
+
+  // Start with transparent
+  stops.push(`transparent 0deg`);
+
+  // Each color occupies one segment
+  palette.forEach((c, i) => {
+    const startAngle = i * segmentSize;
+    const endAngle = (i + 1) * segmentSize;
+    stops.push(`${c} ${Math.max(2, startAngle)}deg`);
+    stops.push(`${c} ${endAngle}deg`);
+  });
+
+  // End with transparent
+  stops.push(`transparent ${beamLength + 10}deg`);
+
+  return `conic-gradient(from ${angle}deg at 50% 50%, ${stops.join(', ')})`;
+}
+
+// CSS mask composite trick: show only the padding/border ring, hide content + outside
+function getBorderMask(borderWidth: number) {
+  return {
+    WebkitMask: `linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)`,
+    WebkitMaskComposite: 'xor' as const,
+    maskComposite: 'exclude' as const,
+    padding: borderWidth,
+  };
 }
 
 const GlowEdge: React.FC<GlowEdgeProps> = ({
   frame,
   borderRadius = 16,
   color = '#CBC0D3',
-  intensity = 2.0,
+  borderWidth = 2,
+  beamLength = 90,
+  glowBlur: glowBlurProp = 20,
+  blurAmount,
+  intensity = 1.0,
   rotationDuration = 120,
   enabled = true,
   colorVariant = 'mono',
 }) => {
   if (!enabled) return null;
 
+  const glowBlur = blurAmount ?? glowBlurProp;
   const angle = (frame * 360 / rotationDuration) % 360;
-  const OUTSET = 40;
-  const glowOpacity = Math.min(1, intensity);
-  const gradStr = getGradientString(colorVariant, color);
-
-  // 14-layer box-shadow for structured multi-ring edge glow with falloff
-  const boxShadowLayers = [
-    `inset 0 0 0 1px ${color}FF`,
-    `inset 0 0 1px 0 ${color}99`,
-    `inset 0 0 3px 0 ${color}80`,
-    `inset 0 0 6px 0 ${color}66`,
-    `inset 0 0 15px 0 ${color}4D`,
-    `inset 0 0 25px 2px ${color}33`,
-    `inset 0 0 50px 2px ${color}1A`,
-    `0 0 1px 0 ${color}99`,
-    `0 0 3px 0 ${color}80`,
-    `0 0 6px 0 ${color}66`,
-    `0 0 15px 0 ${color}4D`,
-    `0 0 25px 2px ${color}33`,
-    `0 0 50px 2px ${color}1A`,
-  ].join(', ');
+  const beamGrad = getBeamGradient(colorVariant, angle, beamLength, color);
+  const maskInset = borderWidth;
+  const maskBorderRadius = borderRadius + maskInset;
 
   return (
-    <div style={{
-      position: 'absolute' as const,
-      inset: -OUTSET,
-      borderRadius,
-      pointerEvents: 'none' as const,
-      zIndex: 3,
-      maskImage: `conic-gradient(from ${angle}deg at center, black 2.5%, transparent 10%, transparent 90%, black 97.5%)`,
-      WebkitMaskImage: `conic-gradient(from ${angle}deg at center, black 2.5%, transparent 10%, transparent 90%, black 97.5%)`,
-      mixBlendMode: 'plus-lighter' as const,
-      opacity: glowOpacity,
-    }}>
-      {/* Inner div: box-shadow + conic-gradient, masked to only show near card edge */}
-      <div style={{
+    <div
+      style={{
         position: 'absolute' as const,
-        inset: OUTSET,
-        borderRadius,
-        boxShadow: boxShadowLayers,
-        background: gradStr,
-        mixBlendMode: 'plus-lighter' as const,
-        maskImage: 'radial-gradient(ellipse at 50% 50%, transparent 85%, black 87%, black 100%)',
-        WebkitMaskImage: 'radial-gradient(ellipse at 50% 50%, transparent 85%, black 87%, black 100%)',
-      }} />
+        inset: 0,
+        pointerEvents: 'none' as const,
+        opacity: Math.min(1, intensity),
+      }}
+    >
+      {/* Layer 1: Glow - blurred halo around the beam */}
+      <div
+        style={{
+          position: 'absolute' as const,
+          inset: -maskInset,
+          borderRadius: maskBorderRadius,
+          background: beamGrad,
+          filter: `blur(${glowBlur}px)`,
+          WebkitFilter: `blur(${glowBlur}px)`,
+          opacity: 0.6,
+          ...getBorderMask(borderWidth),
+        }}
+      />
+
+      {/* Layer 2: Core beam - sharp bright border arc */}
+      <div
+        style={{
+          position: 'absolute' as const,
+          inset: -maskInset,
+          borderRadius: maskBorderRadius,
+          background: beamGrad,
+          ...getBorderMask(borderWidth),
+        }}
+      />
     </div>
   );
 };
