@@ -29,7 +29,6 @@ export interface AnimatedCardSceneProps extends Omit<CardContentProps, 'title'> 
   glowEdgeIllumEnabled?: boolean;
   glowEdgeIllumIntensity?: number;
   glowEdgeColorVariant?: GlowColorVariant;
-  glowEdgeBlurAmount?: number;
 }
 
 export const AnimatedCardScene: React.FC<AnimatedCardSceneProps> = ({
@@ -50,13 +49,12 @@ export const AnimatedCardScene: React.FC<AnimatedCardSceneProps> = ({
   entranceStyle = 'default',
   children,
   glowEdgeEnabled = true,
-  glowEdgeColor = '#CBC0D3',
-  glowEdgeIntensity = 2.0,
+  glowEdgeColor = '#bc6bf5ff',
+  glowEdgeIntensity = 5.0,
   glowEdgeRotationDuration = 120,
   glowEdgeIllumEnabled = true,
-  glowEdgeIllumIntensity = 0.6,
+  glowEdgeIllumIntensity = 0.8,
   glowEdgeColorVariant = 'mono',
-  glowEdgeBlurAmount = 10,
 }) => {
   const frame = useCurrentFrame();
   const { width, height, fps } = useVideoConfig();
@@ -123,9 +121,8 @@ export const AnimatedCardScene: React.FC<AnimatedCardSceneProps> = ({
            glowEdgeRotationDuration={glowEdgeRotationDuration}
            glowEdgeIllumEnabled={glowEdgeIllumEnabled}
            glowEdgeIllumIntensity={glowEdgeIllumIntensity}
-           glowEdgeColorVariant={glowEdgeColorVariant}
-           glowEdgeBlurAmount={glowEdgeBlurAmount}
-         >
+            glowEdgeColorVariant={glowEdgeColorVariant}
+          >
           {children ?? (
             <DefaultCardContent
               title={title ?? ''}

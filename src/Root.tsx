@@ -227,7 +227,6 @@ export const RemotionRoot: React.FC = () => {
           glowEdgeIntensity: 2.0,
           glowEdgeRotationDuration: 120,
           glowEdgeColorVariant: "mono",
-          glowEdgeBlurAmount: 10,
         }}
       />
       <Composition

@@ -27,7 +27,6 @@ interface CardRevealProps {
   glowEdgeIllumEnabled?: boolean;
   glowEdgeIllumIntensity?: number;
   glowEdgeColorVariant?: GlowColorVariant;
-  glowEdgeBlurAmount?: number;
 }
 
 function computePhase(frame: number, config: MotionConfig): PhaseInfo {
@@ -64,7 +63,6 @@ const CardReveal: React.FC<CardRevealProps> = ({
   glowEdgeIllumEnabled = true,
   glowEdgeIllumIntensity = 0.6,
   glowEdgeColorVariant = 'mono',
-  glowEdgeBlurAmount = 10,
 }) => {
   const resolvedCardHeight = cardHeight ?? 280;
   const centerX = (width - cardWidth) / 2;
@@ -84,7 +82,6 @@ const CardReveal: React.FC<CardRevealProps> = ({
       rotationDuration={glowEdgeRotationDuration}
       enabled={glowEdgeEnabled}
       colorVariant={glowEdgeColorVariant}
-      blurAmount={glowEdgeBlurAmount}
     />
   );
 
