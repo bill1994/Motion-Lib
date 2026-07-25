@@ -30,20 +30,37 @@ const GlowEdge: React.FC<GlowEdgeProps> = ({
   const OUTSET = 40;
 
   return (
-    <div style={{
-      position: 'absolute' as const,
-      inset: -OUTSET,
-      borderRadius,
-      pointerEvents: 'none' as const,
-      zIndex: 3,
-      background: getGradientString(colorVariant, color),
-      filter: `blur(${blurAmount}px)`,
-      WebkitFilter: `blur(${blurAmount}px)`,
-      maskImage: `conic-gradient(from ${angle}deg at center, black 2.5%, transparent 10%, transparent 90%, black 97.5%)`,
-      WebkitMaskImage: `conic-gradient(from ${angle}deg at center, black 2.5%, transparent 10%, transparent 90%, black 97.5%)`,
-      mixBlendMode: 'plus-lighter' as const,
-      opacity: Math.min(1, intensity),
-    }} />
+    <>
+      {/* Layer 1: Ambient glow (blurred) */}
+      <div style={{
+        position: 'absolute' as const,
+        inset: -OUTSET,
+        borderRadius,
+        pointerEvents: 'none' as const,
+        zIndex: 3,
+        background: getGradientString(colorVariant, color),
+        filter: `blur(${blurAmount}px)`,
+        WebkitFilter: `blur(${blurAmount}px)`,
+        maskImage: `conic-gradient(from ${angle}deg at center, black 2.5%, transparent 10%, transparent 90%, black 97.5%)`,
+        WebkitMaskImage: `conic-gradient(from ${angle}deg at center, black 2.5%, transparent 10%, transparent 90%, black 97.5%)`,
+        mixBlendMode: 'plus-lighter' as const,
+        opacity: Math.min(1, intensity),
+      }} />
+      {/* Layer 2: Bright core slit (no blur) */}
+      <div style={{
+        position: 'absolute' as const,
+        inset: -OUTSET,
+        borderRadius,
+        pointerEvents: 'none' as const,
+        zIndex: 4,
+        background: getGradientString(colorVariant, color),
+        filter: 'none',
+        maskImage: `conic-gradient(from ${angle}deg at center, black 2.5%, transparent 10%, transparent 90%, black 97.5%)`,
+        WebkitMaskImage: `conic-gradient(from ${angle}deg at center, black 2.5%, transparent 10%, transparent 90%, black 97.5%)`,
+        mixBlendMode: 'plus-lighter' as const,
+        opacity: Math.min(1, intensity * 0.6),
+      }} />
+    </>
   );
 };
 
