@@ -1,5 +1,5 @@
 import React from 'react';
-import { type GlowColorVariant } from './colorPresets';
+import { type GlowColorVariant, getGradientString } from './colorPresets';
 
 export interface GlowEdgeProps {
   width: number;
@@ -21,12 +21,14 @@ const GlowEdge: React.FC<GlowEdgeProps> = ({
   intensity = 2.0,
   rotationDuration = 120,
   enabled = true,
+  colorVariant = 'mono',
 }) => {
   if (!enabled) return null;
 
   const angle = (frame * 360 / rotationDuration) % 360;
   const OUTSET = 40;
   const glowOpacity = Math.min(1, intensity);
+  const gradStr = getGradientString(colorVariant, color);
 
   // 14-layer box-shadow for structured multi-ring edge glow with falloff
   const boxShadowLayers = [
@@ -57,12 +59,14 @@ const GlowEdge: React.FC<GlowEdgeProps> = ({
       mixBlendMode: 'plus-lighter' as const,
       opacity: glowOpacity,
     }}>
-      {/* Box-shadow glow at card surface */}
+      {/* Box-shadow glow + conic-gradient color on card surface */}
       <div style={{
         position: 'absolute' as const,
         inset: OUTSET,
         borderRadius,
         boxShadow: boxShadowLayers,
+        background: gradStr,
+        mixBlendMode: 'plus-lighter' as const,
       }} />
     </div>
   );
