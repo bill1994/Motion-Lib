@@ -111,18 +111,17 @@ const GlowEdge: React.FC<GlowEdgeProps> = ({
         opacity: beamOpacity,
       }}
     >
-      {/* Layer 1: Blurred glow halo around the beam */}
+      {/* Layer 1: Blurred glow halo — NO mask, extends outward */}
       <div
         style={{
           position: 'absolute' as const,
-          inset: -maskInset,
-          borderRadius: maskBorderRadius,
+          inset: -glowBlur,
+          borderRadius: borderRadius + glowBlur,
           background: beamGrad,
           filter: `blur(${glowBlur}px)`,
           WebkitFilter: `blur(${glowBlur}px)`,
           mixBlendMode: 'plus-lighter' as const,
-          opacity: 0.7,
-          ...sharedMask,
+          opacity: 0.5,
         }}
       />
 
