@@ -67,8 +67,8 @@ const GlowEdge: React.FC<GlowEdgeProps> = ({
         boxShadow: boxShadowLayers,
         background: gradStr,
         mixBlendMode: 'plus-lighter' as const,
-        maskImage: 'radial-gradient(ellipse at 50% 50%, transparent 42%, black 44%, black 100%)',
-        WebkitMaskImage: 'radial-gradient(ellipse at 50% 50%, transparent 42%, black 44%, black 100%)',
+        maskImage: 'radial-gradient(ellipse at 50% 50%, transparent 85%, black 87%, black 100%)',
+        WebkitMaskImage: 'radial-gradient(ellipse at 50% 50%, transparent 85%, black 87%, black 100%)',
       }} />
     </div>
   );
