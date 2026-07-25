@@ -60,22 +60,22 @@ const GlowEdge: React.FC<GlowEdgeProps> = ({
       mixBlendMode: 'plus-lighter' as const,
       opacity: glowOpacity,
     }}>
-      {/* Structured edge glow: 14-layer box-shadow at card surface */}
+      {/* Layer 1 (BOTTOM): Color tint — gradient blurred near card edge */}
+      <div style={{
+        position: 'absolute' as const,
+        inset: -Math.min(blurAmount, 10),
+        borderRadius: borderRadius + Math.min(blurAmount, 10),
+        background: gradStr,
+        filter: `blur(${blurAmount}px)`,
+        WebkitFilter: `blur(${blurAmount}px)`,
+        opacity: 0.35,
+      }} />
+      {/* Layer 2 (TOP): Structured box-shadow glow at card surface */}
       <div style={{
         position: 'absolute' as const,
         inset: OUTSET,
         borderRadius,
         boxShadow: boxShadowLayers,
-      }} />
-      {/* Color tint layer: conic-gradient blurred near card perimeter only */}
-      <div style={{
-        position: 'absolute' as const,
-        inset: -blurAmount,
-        borderRadius: borderRadius + blurAmount,
-        background: gradStr,
-        filter: `blur(${blurAmount}px)`,
-        WebkitFilter: `blur(${blurAmount}px)`,
-        opacity: 0.5,
       }} />
     </div>
   );
