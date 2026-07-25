@@ -1,5 +1,5 @@
 import React from 'react';
-import { type GlowColorVariant, getGradientString } from './colorPresets';
+import { type GlowColorVariant } from './colorPresets';
 
 export interface GlowEdgeProps {
   width: number;
@@ -21,15 +21,12 @@ const GlowEdge: React.FC<GlowEdgeProps> = ({
   intensity = 2.0,
   rotationDuration = 120,
   enabled = true,
-  colorVariant = 'mono',
-  blurAmount = 10,
 }) => {
   if (!enabled) return null;
 
   const angle = (frame * 360 / rotationDuration) % 360;
   const OUTSET = 40;
   const glowOpacity = Math.min(1, intensity);
-  const gradStr = getGradientString(colorVariant, color);
 
   // 14-layer box-shadow for structured multi-ring edge glow with falloff
   const boxShadowLayers = [
@@ -60,17 +57,7 @@ const GlowEdge: React.FC<GlowEdgeProps> = ({
       mixBlendMode: 'plus-lighter' as const,
       opacity: glowOpacity,
     }}>
-      {/* Layer 1 (BOTTOM): Color tint — gradient blurred near card edge */}
-      <div style={{
-        position: 'absolute' as const,
-        inset: -Math.min(blurAmount, 10),
-        borderRadius: borderRadius + Math.min(blurAmount, 10),
-        background: gradStr,
-        filter: `blur(${blurAmount}px)`,
-        WebkitFilter: `blur(${blurAmount}px)`,
-        opacity: 0.35,
-      }} />
-      {/* Layer 2 (TOP): Structured box-shadow glow at card surface */}
+      {/* Box-shadow glow at card surface */}
       <div style={{
         position: 'absolute' as const,
         inset: OUTSET,
