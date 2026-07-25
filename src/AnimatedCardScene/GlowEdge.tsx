@@ -59,7 +59,7 @@ const GlowEdge: React.FC<GlowEdgeProps> = ({
       mixBlendMode: 'plus-lighter' as const,
       opacity: glowOpacity,
     }}>
-      {/* Box-shadow glow + conic-gradient color on card surface */}
+      {/* Inner div: box-shadow + conic-gradient, masked to only show near card edge */}
       <div style={{
         position: 'absolute' as const,
         inset: OUTSET,
@@ -67,6 +67,8 @@ const GlowEdge: React.FC<GlowEdgeProps> = ({
         boxShadow: boxShadowLayers,
         background: gradStr,
         mixBlendMode: 'plus-lighter' as const,
+        maskImage: 'radial-gradient(ellipse at 50% 50%, transparent 42%, black 44%, black 100%)',
+        WebkitMaskImage: 'radial-gradient(ellipse at 50% 50%, transparent 42%, black 44%, black 100%)',
       }} />
     </div>
   );
