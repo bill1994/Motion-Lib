@@ -1,186 +1,360 @@
 import React, { useMemo } from 'react';
 import { type GlowColorVariant } from './colorPresets';
 
+// ==========================================
+// 1. Color Interpolation Helpers (解决插值发灰)
+// ==========================================
+
+/**
+ * 将 Hex 或 RGB 颜色转换为指定 Alpha 的 RGBA 字符串
+ * 解决 CSS 渐变插值到 `transparent` (rgba(0,0,0,0)) 导致的灰黑污染问题
+ */
+export function colorToRgba(colorStr: string, alpha: number): string {
+  if (!colorStr) return `rgba(0, 0, 0, ${alpha})`;
+  
+  // 处理 #HEX 格式
+  if (colorStr.startsWith('#')) {
+    let hex = colorStr.replace('#', '');
+    if (hex.length === 3) {
+      hex = hex.split('').map((c) => c + c).join('');
+    }
+    const r = parseInt(hex.substring(0, 2), 16) || 0;
+    const g = parseInt(hex.substring(2, 4), 16) || 0;
+    const b = parseInt(hex.substring(4, 6), 16) || 0;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
+  // 处理 rgb(...) 格式
+  if (colorStr.startsWith('rgb(')) {
+    return colorStr.replace('rgb(', 'rgba(').replace(')', `, ${alpha})`);
+  }
+
+  // 处理 rgba(...) 格式
+  if (colorStr.startsWith('rgba(')) {
+    return colorStr.replace(/,\s*[\d\.]+\)/, `, ${alpha})`);
+  }
+
+  return colorStr;
+}
+
+// ==========================================
+// 2. Types & Abstractions
+// ==========================================
+
+export interface ColorStop {
+  color: string;
+  angleDeg: number;
+}
+
+export interface BeamProfile {
+  beamLength: number;   // 弧度角度 (0 ~ 360)
+  feather: number;      // 头尾渐隐弧度
+  whiteHot: boolean;    // 是否开启电光白芯
+  palette?: string[];   // 自定义色板
+}
+
+export interface LayerConfig {
+  id: string;
+  blur: number;
+  opacity: number;
+  ringWidthOffset?: number;                          // 相对基础 borderWidth 的增量 (px)
+  clipInside?: boolean;                              // 是否限制在卡片内部
+  mixBlendMode?: React.CSSProperties['mixBlendMode']; // 混合模式 (plus-lighter / screen)
+}
+
 export interface GlowEdgeProps {
   width: number;
   height: number;
   frame: number;
   borderRadius?: number;
   color?: string;
-  borderWidth?: number;            // 核心 Beam 粗细 (可自由调整 1px ~ 10px)
-  beamLength?: number;             // 光束弧度长度 (0 ~ 360deg)
-  intensity?: number;              // 总体能量系数
-  rotationDuration?: number;       // 旋转一周帧数
+  borderWidth?: number;
+  intensity?: number;
+  rotationDuration?: number;
   enabled?: boolean;
   colorVariant?: GlowColorVariant;
-
-  coreWhiteHot?: boolean;          // 是否开启高能量白炽核心 (默认 true)
+  profilePreset?: 'cyberpunk' | 'apple' | 'rainbow' | 'neonMono';
+  customProfile?: Partial<BeamProfile>;
+  customLayers?: LayerConfig[];
 }
 
-const BEAM_PALETTES: Record<string, string[]> = {
-  mono: [],
-  rainbow: ['#ff3264', '#cc44ff', '#288cff', '#32c850', '#ffcc00'],
-  ocean: ['#6446ff', '#288cff', '#1db9aa', '#32c850'],
-  sunset: ['#ff3264', '#ff6600', '#ffcc00', '#ff6600'],
+// ==========================================
+// 3. Beam Profiles & Gradient Generator
+// ==========================================
+
+export const BEAM_PROFILES: Record<string, BeamProfile> = {
+  neonMono: {
+    beamLength: 70,
+    feather: 15,
+    whiteHot: true,
+  },
+  cyberpunk: {
+    beamLength: 90,
+    feather: 20,
+    whiteHot: true,
+    palette: ['#00f0ff', '#ff0055', '#7000ff'],
+  },
+  apple: {
+    beamLength: 60,
+    feather: 25,
+    whiteHot: false,
+    palette: ['#ffffff', '#a1a1aa', '#52525b'],
+  },
+  rainbow: {
+    beamLength: 120,
+    feather: 15,
+    whiteHot: false,
+    palette: ['#ff3264', '#cc44ff', '#288cff', '#32c850', '#ffcc00'],
+  },
 };
 
 /**
- * 构造高能量 Beam 渐变（核心带有纯白炽热段，向两侧过渡到主题色彩）
- * 无论 Core 还是 Bloom，全部使用这同一个渐变函数，保证颜色 100% 同源
+ * 生成干净色彩空间插值的 ColorStop 节点
  */
-function buildHighEnergyGradient(
+export function generateBeamStops(
+  profile: BeamProfile,
   variant: GlowColorVariant,
-  beamLength: number,
-  color: string,
-  whiteHot: boolean
-): string {
-  const coreColor = whiteHot ? '#FFFFFF' : color;
+  baseColor: string
+): ColorStop[] {
+  const { beamLength, feather, whiteHot, palette } = profile;
+  const stops: ColorStop[] = [];
 
-  if (variant === 'mono' || variant === 'custom') {
-    // 渐变结构：透明 ➔ 主色 ➔ 白炽核心 ➔ 主色 ➔ 透明
-    const stops = [
-      `transparent 0deg`,
-      `rgba(0,0,0,0) 2deg`,
-      `${color} ${(beamLength * 0.2).toFixed(1)}deg`,
-      `${coreColor} ${(beamLength * 0.5).toFixed(1)}deg`,
-      `${color} ${(beamLength * 0.8).toFixed(1)}deg`,
-      `transparent ${beamLength.toFixed(1)}deg`,
-      `transparent 360deg`,
-    ];
-    return `conic-gradient(from 0deg at 50% 50%, ${stops.join(', ')})`;
+  // 判定是否使用 Palette 模式 (修复 API 优先级 BUG)
+  const hasPresetPalette = Boolean(palette && palette.length > 0);
+  const usePalette = hasPresetPalette || (variant !== 'mono' && variant !== 'custom');
+
+  if (!usePalette) {
+    // ----------------- 单色 / 白芯光束 -----------------
+    const zeroAlphaBase = colorToRgba(baseColor, 0);
+    const fullBase = colorToRgba(baseColor, 1);
+    
+    // 初始透明点：使用基色的 Alpha=0，拒绝 transparent 黑色插值
+    stops.push({ color: zeroAlphaBase, angleDeg: 0 });
+    stops.push({ color: zeroAlphaBase, angleDeg: 2 });
+    stops.push({ color: fullBase, angleDeg: Math.max(2, feather) });
+
+    if (whiteHot) {
+      const zeroAlphaWhite = 'rgba(255, 255, 255, 0)';
+      const fullWhite = 'rgba(255, 255, 255, 1)';
+      stops.push({ color: fullWhite, angleDeg: beamLength * 0.5 });
+    } else {
+      stops.push({ color: fullBase, angleDeg: beamLength * 0.5 });
+    }
+
+    stops.push({ color: fullBase, angleDeg: Math.max(beamLength - feather, beamLength * 0.8) });
+    stops.push({ color: zeroAlphaBase, angleDeg: beamLength });
+    stops.push({ color: zeroAlphaBase, angleDeg: 360 });
+  } else {
+    // ----------------- 多色彩虹 / 调色板光束 -----------------
+    const activePalette = palette && palette.length > 0 
+      ? palette 
+      : ['#ff3264', '#cc44ff', '#288cff', '#32c850', '#ffcc00'];
+
+    const firstColorZero = colorToRgba(activePalette[0], 0);
+    const lastColorZero = colorToRgba(activePalette[activePalette.length - 1], 0);
+
+    stops.push({ color: firstColorZero, angleDeg: 0 });
+    
+    const step = beamLength / activePalette.length;
+    activePalette.forEach((c, i) => {
+      const angle = (i + 0.5) * step;
+      stops.push({ color: colorToRgba(c, 1), angleDeg: Number(angle.toFixed(1)) });
+    });
+
+    stops.push({ color: lastColorZero, angleDeg: beamLength });
+    stops.push({ color: lastColorZero, angleDeg: 360 });
   }
 
-  // 多色彩虹渐变逻辑
-  const palette = BEAM_PALETTES[variant] || BEAM_PALETTES.rainbow;
-  const num = palette.length;
-  const step = beamLength / num;
-
-  const stops: string[] = ['transparent 0deg'];
-  palette.forEach((c, i) => {
-    const startAngle = i * step;
-    const midAngle = (i + 0.5) * step;
-    stops.push(`${c}00 ${Math.max(2, startAngle).toFixed(1)}deg`);
-    stops.push(`${c} ${midAngle.toFixed(1)}deg`);
-  });
-  stops.push(`${palette[num - 1]}00 ${beamLength.toFixed(1)}deg`);
-  stops.push('transparent 360deg');
-
-  return `conic-gradient(from 0deg at 50% 50%, ${stops.join(', ')})`;
+  return stops;
 }
+
+export function stopsToConicGradient(stops: ColorStop[]): string {
+  const stopStrs = stops.map((s) => `${s.color} ${s.angleDeg}deg`);
+  return `conic-gradient(from 0deg at 50% 50%, ${stopStrs.join(', ')})`;
+}
+
+// ==========================================
+// 4. Sub-components (修复光心对齐与混合模式)
+// ==========================================
+
+/**
+ * 旋转渐变画布：根据层容器的实际展开尺寸精准计算中心点
+ */
+const RotatingGradient: React.FC<{
+  containerWidth: number;
+  containerHeight: number;
+  angle: number;
+  gradientStr: string;
+}> = React.memo(({ containerWidth, containerHeight, angle, gradientStr }) => {
+  // 最小外接圆直径 D = √(W² + H²)
+  const diagonal = Math.ceil(Math.sqrt(containerWidth * containerWidth + containerHeight * containerHeight));
+  const left = (containerWidth - diagonal) / 2;
+  const top = (containerHeight - diagonal) / 2;
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        width: diagonal,
+        height: diagonal,
+        left,
+        top,
+        borderRadius: '50%',
+        transform: `rotate(${angle}deg)`,
+        transformOrigin: 'center center',
+        willChange: 'transform',
+        background: gradientStr,
+      }}
+    />
+  );
+});
+
+RotatingGradient.displayName = 'RotatingGradient';
+
+/**
+ * 环形遮罩图层
+ */
+const RingLayer: React.FC<{
+  borderRadius: number;
+  ringWidth: number;
+  blur: number;
+  opacity: number;
+  intensityFilter?: string;
+  mixBlendMode?: React.CSSProperties['mixBlendMode'];
+  clipInside?: boolean;
+  children: React.ReactNode;
+}> = ({ borderRadius, ringWidth, blur, opacity, intensityFilter, mixBlendMode, clipInside = false, children }) => {
+  const ringMaskStyle: React.CSSProperties = {
+    WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+    WebkitMaskComposite: 'xor',
+    maskComposite: 'exclude',
+    padding: `${ringWidth}px`,
+  };
+
+  const layerContent = (
+    <div
+      style={{
+        position: 'absolute',
+        inset: -ringWidth,
+        borderRadius: borderRadius + ringWidth,
+        filter: blur > 0 
+          ? `blur(${blur}px) ${intensityFilter || ''}`.trim() 
+          : intensityFilter || undefined,
+        WebkitFilter: blur > 0 
+          ? `blur(${blur}px) ${intensityFilter || ''}`.trim() 
+          : intensityFilter || undefined,
+        opacity,
+        mixBlendMode,
+      }}
+    >
+      <div style={{ position: 'absolute', inset: 0, ...ringMaskStyle }}>
+        {children}
+      </div>
+    </div>
+  );
+
+  if (clipInside) {
+    return (
+      <div style={{ position: 'absolute', inset: 0, borderRadius, overflow: 'hidden' }}>
+        {layerContent}
+      </div>
+    );
+  }
+
+  return layerContent;
+};
+
+// ==========================================
+// 5. Improved Default Layer Configurations
+// ==========================================
+
+const DEFAULT_LAYERS: LayerConfig[] = [
+  // 1. 广域外发光：高斯模糊 36px，加色混合
+  { id: 'bloom-outer', blur: 36, opacity: 0.6, ringWidthOffset: 16, mixBlendMode: 'screen' },
+  // 2. 内发光：赋予 10px 的扩张厚度，为 16px 模糊保留足够物理介质 (修复原先被吃光的问题)
+  { id: 'bloom-inner', blur: 16, opacity: 0.7, ringWidthOffset: 10, clipInside: true, mixBlendMode: 'screen' },
+  // 3. 紧贴边框的高能辉光：plus-lighter 叠加过曝
+  { id: 'tight-glow',  blur: 4,  opacity: 0.85, ringWidthOffset: 1, mixBlendMode: 'plus-lighter' },
+  // 4. 核心物理线：plus-lighter 电光白芯
+  { id: 'core-beam',   blur: 0,  opacity: 1.0,  mixBlendMode: 'plus-lighter' },
+];
+
+// ==========================================
+// 6. Main GlowEdge Component
+// ==========================================
 
 const GlowEdge: React.FC<GlowEdgeProps> = ({
   width,
   height,
   frame,
   borderRadius = 16,
-  color = '#CBC0D3',
-  borderWidth = 3,                 // 核心粗细，可随意调大调小
-  beamLength = 70,
+  color = '#A855F7',
+  borderWidth = 3,
   intensity = 1.0,
   rotationDuration = 120,
   enabled = true,
   colorVariant = 'mono',
-
-  // 默认发光配置
-  coreWhiteHot = true,
+  profilePreset = 'neonMono',
+  customProfile,
+  customLayers = DEFAULT_LAYERS,
 }) => {
-  // 1. 全局唯一的渐变源（Core 和 Bloom 共享，确保完全同源）
-  const sharedGradient = useMemo(
-    () => buildHighEnergyGradient(colorVariant, beamLength, color, coreWhiteHot),
-    [colorVariant, beamLength, color, coreWhiteHot]
-  );
+  // 1. 合并 Beam Profile 参数
+  const mergedProfile = useMemo<BeamProfile>(() => {
+    const base = BEAM_PROFILES[profilePreset] || BEAM_PROFILES.neonMono;
+    return { ...base, ...customProfile };
+  }, [profilePreset, customProfile]);
+
+  // 2. 生成完全剔除灰黑插值污染的渐变字符串
+  const gradientStr = useMemo(() => {
+    const stops = generateBeamStops(mergedProfile, colorVariant, color);
+    return stopsToConicGradient(stops);
+  }, [mergedProfile, colorVariant, color]);
 
   if (!enabled) return null;
 
-  // 2. GPU 硬件加速旋转角度
+  // 3. GPU 旋转角度更新
   const angle = (frame * 360 / rotationDuration) % 360;
 
-  // 3. 严格匹配 borderWidth 的标准边框 Mask
-  const ringMaskStyle: React.CSSProperties = {
-    WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-    WebkitMaskComposite: 'xor',
-    maskComposite: 'exclude',
-    padding: `${borderWidth}px`,
-  };
-
-  // 4. 旋转基座（保持极大尺寸，旋转时不会露角）
-  const diagonal = Math.ceil(Math.sqrt(width * width + height * height));
-  const rotatingBase: React.CSSProperties = {
-    position: 'absolute',
-    inset: -diagonal,
-    borderRadius: '50%',
-    transform: `rotate(${angle}deg)`,
-    willChange: 'transform',
-    background: sharedGradient,
-  };
-
-  const beamOpacity = Math.min(1, intensity);
+  // 4. 计算亮度补偿滤镜 (修复 CSS opacity 被 clamp 在 [0, 1] 导致 intensity 失效)
+  const intensityFilter = intensity > 1.0 ? `brightness(${intensity})` : undefined;
 
   return (
     <div
       style={{
-        position: 'absolute' as const,
+        position: 'absolute',
         inset: 0,
-        borderRadius,
-        pointerEvents: 'none' as const,
+        pointerEvents: 'none',
         zIndex: 5,
-        opacity: beamOpacity,
-        // NO overflow hidden — glow needs to spill outward
       }}
     >
-      {/* 4. Bloom — widest spread, NO mask */}
-      <div style={{
-        position: 'absolute' as const,
-        inset: -60,
-        borderRadius: borderRadius + 60,
-      }}>
-        <div style={{
-          ...rotatingBase,
-          background: sharedGradient,
-          filter: 'blur(48px)',
-          WebkitFilter: 'blur(48px)',
-          mixBlendMode: 'plus-lighter' as const,
-          opacity: 0.15,
-        }} />
-      </div>
+      {customLayers.map((layer) => {
+        const ringWidth = borderWidth + (layer.ringWidthOffset || 0);
+        const finalOpacity = Math.min(1.0, layer.opacity * Math.min(1.0, intensity));
 
-      {/* 3. Outer Glow — medium spread, NO mask */}
-      <div style={{
-        position: 'absolute' as const,
-        inset: -30,
-        borderRadius: borderRadius + 30,
-      }}>
-        <div style={{
-          ...rotatingBase,
-          background: sharedGradient,
-          filter: 'blur(20px)',
-          WebkitFilter: 'blur(20px)',
-          mixBlendMode: 'plus-lighter' as const,
-          opacity: 0.3,
-        }} />
-      </div>
+        // 关键修复：向 RotatingGradient 传入包含 ringWidth 扩张后的真实容器尺寸
+        const currentContainerWidth = width + ringWidth * 2;
+        const currentContainerHeight = height + ringWidth * 2;
 
-      {/* 2. Inner Glow — tight, WITH mask */}
-      <div style={{ position: 'absolute' as const, inset: -borderWidth, borderRadius: borderRadius + borderWidth, ...ringMaskStyle }}>
-        <div style={{
-          ...rotatingBase,
-          background: sharedGradient,
-          filter: 'blur(6px)',
-          WebkitFilter: 'blur(6px)',
-          mixBlendMode: 'plus-lighter' as const,
-          opacity: 0.6,
-        }} />
-      </div>
-
-      {/* 1. Core Beam — sharp, WITH mask */}
-      <div style={{ position: 'absolute' as const, inset: -borderWidth, borderRadius: borderRadius + borderWidth, ...ringMaskStyle }}>
-        <div style={{
-          ...rotatingBase,
-          background: sharedGradient,
-          mixBlendMode: 'plus-lighter' as const,
-          opacity: 1.0,
-        }} />
-      </div>
+        return (
+          <RingLayer
+            key={layer.id}
+            borderRadius={borderRadius}
+            ringWidth={ringWidth}
+            blur={layer.blur}
+            opacity={finalOpacity}
+            intensityFilter={intensityFilter}
+            mixBlendMode={layer.mixBlendMode}
+            clipInside={layer.clipInside}
+          >
+            <RotatingGradient
+              containerWidth={currentContainerWidth}
+              containerHeight={currentContainerHeight}
+              angle={angle}
+              gradientStr={gradientStr}
+            />
+          </RingLayer>
+        );
+      })}
     </div>
   );
 };

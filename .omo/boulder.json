@@ -1,21 +1,13 @@
 {
   "schema_version": 2,
-  "active_work_id": "burst-reveal",
+  "active_work_id": null,
   "works": {
-    "title-reveal-new-modes": {
-      "work_id": "title-reveal-new-modes",
-      "active_plan": ".omo/plans/title-reveal-new-modes.md",
-      "plan_name": "title-reveal-new-modes",
+    "glowedge-gradient-refactor": {
+      "work_id": "glowedge-gradient-refactor",
+      "active_plan": ".omo/plans/glowedge-gradient-refactor.md",
+      "plan_name": "glowedge-gradient-refactor",
       "session_ids": [],
-      "status": "active",
-      "worktree_path": null
-    },
-    "burst-reveal": {
-      "work_id": "burst-reveal",
-      "active_plan": ".omo/plans/burst-reveal.md",
-      "plan_name": "burst-reveal",
-      "session_ids": ["codex:current"],
-      "status": "active",
+      "status": "completed",
       "worktree_path": null
     }
   }
